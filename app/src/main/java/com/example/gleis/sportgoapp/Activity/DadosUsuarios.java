@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.R;
 import com.example.gleis.sportgoapp.Services.UserDados;
+import com.squareup.picasso.Picasso;
 
 public class DadosUsuarios extends AppCompatActivity {
 
@@ -21,7 +22,7 @@ public class DadosUsuarios extends AppCompatActivity {
     private TextView tv_esporte;
     private TextView tv_cidade;
     private TextView tv_estado;
-    private Usuario usuario;
+    private Usuario usuario = UserDados.usuarioFirebase();
 
     FloatingActionButton btnEditar;
 
@@ -31,13 +32,17 @@ public class DadosUsuarios extends AppCompatActivity {
         setContentView(R.layout.activity_dados_usuarios);
         associa();
 
-        usuario = UserDados.usuarioFirebase();
+        Picasso.get().load(usuario.getUrlImagem()).into(img_perfil);
+        tv_email.setText(usuario.getEmail());
+        tv_esporte.setText(usuario.getEsporte());
+        tv_cidade.setText(usuario.getCidade());
+        tv_estado.setText(usuario.getEstado());
 
-        System.out.println("Usuario dados --->"+usuario.getEmail());
 
         setSupportActionBar(mtoolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(usuario.getNome()+", "+usuario.getIdade()+" anos");
 
     }
 

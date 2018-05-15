@@ -1,8 +1,10 @@
 package com.example.gleis.sportgoapp.Fragment;
 
 
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -50,8 +52,7 @@ public class MapaFragment extends Fragment {
     private DatabaseReference usuariodados;
 
     // Latitude  e Longitude  da região do usuario.
-    private Double latRegiao;
-    private Double lngRegiao;
+    private LatLng latLngRegiao;
 
 
     public MapaFragment() {
@@ -63,15 +64,17 @@ public class MapaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mapa, container, false);
-
         //inicializando mapa
         mapView = (MapView) view.findViewById(R.id.mapViewEventos);
         mapView.onCreate(savedInstanceState);
+        if(isOnline()){
 
-        listaEventosMapa();
+            listaEventosMapa();
 
-        associaDadosFirebase();
-        // Inflate the layout for this fragment
+            associaDadosFirebase();
+            // Inflate the layout for this fragment
+        }
+
         return view;
     }
 
@@ -108,6 +111,15 @@ public class MapaFragment extends Fragment {
 
     }
 
+    // teste de conexão
+
+    public boolean isOnline() {
+        ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return manager.getActiveNetworkInfo() != null &&
+                manager.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
     //buscando dados do usuario para recuper latlng//
     private void associaDadosFirebase() {
 
@@ -118,7 +130,6 @@ public class MapaFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    System.out.println("chegamos aqui ze"+ dataSnapshot.getValue());
                     // recebendo dados do usuario
                     usuario = dataSnapshot.getValue(Usuario.class);
 
@@ -128,8 +139,8 @@ public class MapaFragment extends Fragment {
                     buscarcidade.buscaLatLng(getActivity(),usuario.getCidade()+"+"+usuario.getEstado());
 
                     // passando latLong da região do usuario para variaveis globais
-                    latRegiao = buscarcidade.getLatitude();
-                    lngRegiao = buscarcidade.getLongitude();
+
+                    latLngRegiao = new LatLng(buscarcidade.getLatitude(),buscarcidade.getLongitude());
 
                 }
                 @Override
@@ -151,7 +162,6 @@ public class MapaFragment extends Fragment {
                 //latitude e longitude dos eventos
                 LatLng latLng = new LatLng(lat, lng);
                 // posicionando mapa na região do usuario
-                LatLng latLngRegiao = new LatLng(latRegiao, lngRegiao);
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 // marcando locais dos eventos
                 MarkerOptions marker = new MarkerOptions();

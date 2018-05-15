@@ -55,10 +55,10 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        View view = inflater.inflate(R.layout.fragment_sem_conexao, container, false);
         if(isOnline()){
             // inflar o layout para este fragmento
-            View view = inflater.inflate(R.layout.fragment_eventos, container, false);
+             view = inflater.inflate(R.layout.fragment_eventos, container, false);
             recyclerViewEventos = (RecyclerView) view.findViewById(R.id.id_recycler_view_eventos);
             //metodo para carregar dados no final da lista !!! metodo antigo
             recyclerViewEventos.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -114,8 +114,6 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
             recyclerViewEventos.setAdapter(adapter);
             return  view;
         }
-
-        View view = inflater.inflate(R.layout.fragment_sem_conexao, container, false);
 
         return view;
 

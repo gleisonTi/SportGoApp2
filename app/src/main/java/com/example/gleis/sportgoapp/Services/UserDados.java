@@ -18,14 +18,13 @@ public class UserDados {
     private static Usuario usuarioFirebase;
     private static FirebaseUser user;
     private static DatabaseReference usuariodados;
-    private static Usuario usuario;
+    private static Usuario usuario = new Usuario();
 
     public UserDados() {
     }
 
     public static Usuario usuarioFirebase() {
 
-        usuario = new Usuario();
         usuariodados = ConfiguraFirebase.getFirebase();
         user = ConfiguraFirebase.getAutenticacao().getCurrentUser();
         if (user != null) {
@@ -35,17 +34,9 @@ public class UserDados {
 
                     usuarioFirebase = dataSnapshot.getValue(Usuario.class);
 
-                    System.out.println("Usuario dados1 --->"+usuarioFirebase.getEmail());
+                    usuario = usuarioFirebase;
 
-                    usuario.setNome(usuarioFirebase.getNome());
-                    usuario.setEmail(usuarioFirebase.getEmail());
-                    usuario.setEsporte(usuarioFirebase.getEsporte());
-                    usuario.setIdade(usuarioFirebase.getIdade());
-                    usuario.setEstado(usuarioFirebase.getEstado());
-                    usuario.setCidade(usuarioFirebase.getCidade());
-                    usuario.setSexo(usuarioFirebase.getSexo());
-                    usuario.setUrlImagem(usuarioFirebase.getUrlImagem());
-
+                    System.out.println("Usuario dados1 --->"+usuario.getEmail());
 
                 }
 
@@ -58,6 +49,6 @@ public class UserDados {
 
 
         // retornando dados do usuario logado
-        return usuarioFirebase;
+        return usuario;
     }
 }
