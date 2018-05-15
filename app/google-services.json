@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_number": "284674252851",
+    "firebase_url": "https://sportgo-c958c.firebaseio.com",
+    "project_id": "sportgo-c958c",
+    "storage_bucket": "sportgo-c958c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284674252851:android:245fb90dd1b3e166",
+        "android_client_info": {
+          "package_name": "com.example.gleis.sportgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284674252851-bjrg6qocm63i0je7iou2cgqv50sar1td.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gleis.sportgo",
+            "certificate_hash": "1e5b8a639e845be27c029a34c82cf6cb8f131a2d"
+          }
+        },
+        {
+          "client_id": "284674252851-hmm1sgdodnej993v3qehml8lbt0a6ldc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHAcDaDL9VOH4U-fBfLq_jTLvHKuzoV3U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284674252851-hmm1sgdodnej993v3qehml8lbt0a6ldc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284674252851:android:5a6e0bc12696ebf3",
+        "android_client_info": {
+          "package_name": "com.example.gleis.teste"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284674252851-hmm1sgdodnej993v3qehml8lbt0a6ldc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHAcDaDL9VOH4U-fBfLq_jTLvHKuzoV3U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284674252851:android:c89aed53e82c0110",
+        "android_client_info": {
+          "package_name": "com.example.gleis.sportgoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284674252851-nd8mj8odtesmhvufcbhaf6qqm5nrki3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gleis.sportgoapp",
+            "certificate_hash": "1e5b8a639e845be27c029a34c82cf6cb8f131a2d"
+          }
+        },
+        {
+          "client_id": "284674252851-hmm1sgdodnej993v3qehml8lbt0a6ldc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHAcDaDL9VOH4U-fBfLq_jTLvHKuzoV3U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284674252851-hmm1sgdodnej993v3qehml8lbt0a6ldc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

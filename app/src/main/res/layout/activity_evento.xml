@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.gleis.sportgoapp.Activity.EventoActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_evento"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        app:titleTextColor="@color/edit_text_color"
+        android:background="?attr/colorPrimary" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tb_evento"
+        android:fillViewport="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:id="@+id/img_evento"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@null" />
+
+            <TextView
+                android:id="@+id/id_tipo_evento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/img_evento"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Tipo"
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/id_titulo_evento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/id_tipo_evento"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"
+                android:text="Titulo"
+                android:textSize="24sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/id_titulo_evento"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorSecondText"
+                android:id="@+id/view1" />
+
+            <TextView
+                android:id="@+id/endereco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view1"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:textSize="16sp"
+                android:text="Edereço:"
+                android:textColor="@color/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/id_loc_evento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/endereco"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="Rua Demar Tozi, 291, São Joaquqin, Franca - Sp "
+                android:textSize="18sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/id_loc_evento"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorSecondText"
+                android:id="@+id/view2" />
+
+            <TextView
+                android:id="@+id/sobre_texto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view2"
+                android:text="Sobre o Evento"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"/>
+
+            <ImageView
+                android:id="@+id/data"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/sobre_texto"
+                android:src="@drawable/ic_action_calendar_day"
+                android:layout_marginLeft="34dp"
+                android:layout_marginTop="16dp"
+                />
+
+            <TextView
+                android:id="@+id/id_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/data"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="DD/MM/AAAA"
+                android:textSize="14sp"/>
+
+            <ImageView
+                android:id="@+id/hora"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/sobre_texto"
+                android:src="@drawable/ic_action_clock"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                />
+            <TextView
+                android:id="@+id/id_hora"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/hora"
+                android:layout_centerInParent="true"
+                android:text="HH:mm"
+                android:textSize="14sp"/>
+
+
+
+            <ImageView
+                android:id="@+id/users"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/sobre_texto"
+                android:src="@drawable/ic_action_users"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="16dp"
+                />
+            <TextView
+                android:id="@+id/id_qtd_participantes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/users"
+                android:layout_alignParentRight="true"
+                android:text="15/50"
+                android:layout_marginRight="38dp"
+                android:textSize="14sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/id_hora"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorSecondText"
+                android:id="@+id/view3" />
+
+            <TextView
+                android:id="@+id/descricao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view3"
+                android:text="Descrição"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"/>
+            <TextView
+                android:id="@+id/id_descricao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/descricao"
+                android:text="é simplesmente uma simulação de texto da indústria tipográfica e de impressos, e vem sendo utilizado desde o século XVI, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos de tipos. Lorem Ipsum sobreviveu não só a cinco séculos,"
+                android:textSize="18sp"
+                android:textAlignment="inherit"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                />
+
+            <Button
+                android:id="@+id/btn_participar"
+                android:layout_width="@dimen/largura_btn_proximo"
+                android:layout_height="@dimen/altura_btn_proximo"
+                android:layout_below="@+id/id_descricao"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="32dp"
+                android:text="Participar"
+                android:textStyle="bold"
+                android:textColor="@color/edit_text_color"
+                android:backgroundTint="@color/colorPrimary"/>
+
+            <Button
+                android:id="@+id/btn_voltar"
+                android:layout_width="@dimen/largura_btn_voltar"
+                android:layout_height="@dimen/altura_btn_voltar"
+                android:layout_below="@+id/id_descricao"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/btn_voltar"
+                android:textStyle="bold"
+                android:textColor="@color/edit_text_color"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="@color/color_btn"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+
+    ]
+</RelativeLayout>

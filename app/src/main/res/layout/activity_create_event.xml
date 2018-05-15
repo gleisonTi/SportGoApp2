@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Criar Evento"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aqui você podera criar um evento esportivo para ser publicado para todos os usuarios."
+        android:textSize="14sp"
+        android:textStyle=""
+        android:gravity="center"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/id_titulo_evento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin">
+
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Titulo do Evento"
+            android:inputType="textCapSentences"></android.support.design.widget.TextInputEditText>
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/id_tipo_evento"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:hint="Tipo do Esporte"
+                android:inputType="textCapSentences"></android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_action_users" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/id_qtd_evento"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="@dimen/activity_horizontal_margin">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="Quant. Participantes"
+                android:inputType="number">
+
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+
+    </LinearLayout>
+
+
+
+        <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Escolha uma data e Horario para o evento"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/img_data"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="12dp"
+            android:src="@drawable/ic_action_calendar_day" />
+
+        <TextView
+            android:id="@+id/id_tv_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dd/MM/AAAA"
+            android:textSize="14sp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+
+        <ImageView
+            android:id="@+id/img_hora"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_action_clock"
+            android:layout_marginLeft="40dp"/>
+
+        <TextView
+            android:id="@+id/id_tv_hora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HH:mm"
+            android:textSize="14sp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+
+
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/id_descricao"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:gravity="top"
+        >
+
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="top"
+            android:gravity="top"
+            android:hint="Titulo do Evento"
+            android:inputType="textMultiLine"
+            android:selectAllOnFocus="false"
+            android:singleLine="false">
+
+        </android.support.design.widget.TextInputEditText>
+    </android.support.design.widget.TextInputLayout>
+    <LinearLayout
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/id_btn_voltar"
+            android:layout_width="@dimen/largura_btn_voltar"
+            android:layout_height="@dimen/altura_btn_voltar"
+            android:text="@string/btn_proximo"
+            android:textStyle="bold"
+            android:backgroundTint="@color/color_btn"
+            android:textColor="@color/edit_text_color"/>
+
+        <Button
+            android:id="@+id/id_btn_proximo"
+            android:layout_width="@dimen/largura_btn_proximo"
+            android:layout_height="@dimen/altura_btn_proximo"
+            android:layout_marginLeft="80dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/edit_text_color"
+            android:textStyle="bold"
+            android:text="@string/btn_proximo"/>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

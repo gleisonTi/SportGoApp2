@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/id_conta"
+            android:icon="@drawable/ic_account_circle"
+            android:title="Conta" />
+        <item
+            android:id="@+id/id_eventos"
+            android:icon="@drawable/ic_insert_photo"
+            android:title="Eventos cadastrados" />
+        <item
+            android:id="@+id/id_eventos_criados"
+            android:icon="@drawable/ic_pool"
+            android:title="Eventos criados
+" />
+
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/id_amigos"
+                android:icon="@drawable/ic_group"
+                android:title="Amigos" />
+            <item
+                android:id="@+id/id_sair"
+                android:icon="@drawable/ic_exit_to_app"
+                android:title="Sair" />
+        </menu>
+    </item>
+
+</menu>

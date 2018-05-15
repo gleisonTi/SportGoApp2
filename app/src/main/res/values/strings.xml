@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">SportGo</string>
+    <string name="email">Digite seu e-mail</string>
+    <string name="senha">Digite sua senha</string>
+    <string name="inserir_imagem">escolha um foto</string>
+    <string name="criar_conta">Criar conta</string>
+    <string name="n_possui_uma_conta">Nã possui uma conta,</string>
+    <string name="entrar">Entrar</string>
+    <string name="todo">TODO</string>
+    <string name="title_activity_tela_inical">TelaInicalActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Configurações</string>
+    <string name="title_activity_main2">SportGo</string>
+    <string name="n_o_possui_um_conta">Não possui um conta</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="btn_voltar">Voltar</string>
+    <string name="btn_proximo">Proximo</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
