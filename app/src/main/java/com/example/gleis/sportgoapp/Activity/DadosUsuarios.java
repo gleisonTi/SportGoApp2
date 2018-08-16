@@ -5,11 +5,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
 import com.example.gleis.sportgoapp.Entidades.Usuario;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.example.gleis.sportgoapp.Services.UserDados;
 import com.squareup.picasso.Picasso;
@@ -22,9 +24,8 @@ public class DadosUsuarios extends AppCompatActivity {
     private TextView tv_esporte;
     private TextView tv_cidade;
     private TextView tv_estado;
-    private Usuario usuario = UserDados.usuarioFirebase();
-
-    FloatingActionButton btnEditar;
+    private FloatingActionButton fb_editar;
+    private TinyDB tinyDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,13 +33,23 @@ public class DadosUsuarios extends AppCompatActivity {
         setContentView(R.layout.activity_dados_usuarios);
         associa();
 
+        Object dadosUsuario = tinyDB.getObject("dadosUsuario",Usuario.class);
+
+        Usuario usuario = (Usuario) dadosUsuario;
+
         Picasso.get().load(usuario.getUrlImagem()).into(img_perfil);
         tv_email.setText(usuario.getEmail());
         tv_esporte.setText(usuario.getEsporte());
         tv_cidade.setText(usuario.getCidade());
         tv_estado.setText(usuario.getEstado());
 
-
+        fb_editar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(DadosUsuarios.this,EditarUsuarioActivity.class);
+                startActivity(it);
+            }
+        });
         setSupportActionBar(mtoolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -58,12 +69,14 @@ public class DadosUsuarios extends AppCompatActivity {
         return true;
     }
     private void associa() {
+        tinyDB = new TinyDB(this);
         mtoolbar = (Toolbar) findViewById(R.id.tbDetalhes);
         img_perfil = (ImageView) findViewById(R.id.img_perfil_usuario);
         tv_email = (TextView) findViewById(R.id.tv_email_usuario);
         tv_esporte = (TextView) findViewById(R.id.tv_esporte_usuario);
         tv_cidade = (TextView) findViewById(R.id.tv_cidade_usuario);
         tv_estado = (TextView) findViewById(R.id.tv_estado_usuario);
+        fb_editar =(FloatingActionButton) findViewById(R.id.fb_editar);
 
     }
 }

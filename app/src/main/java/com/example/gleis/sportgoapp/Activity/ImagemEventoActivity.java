@@ -2,7 +2,9 @@ package com.example.gleis.sportgoapp.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -27,6 +29,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
@@ -171,45 +175,51 @@ public class ImagemEventoActivity extends AppCompatActivity {
     }
 
     private void salvarDados(Uri selectedImage) {
+        // teste para imagem nula se não houver imagem
+        // devera ser aplicado o Tinidb para caregamento de dados dos usuarios
+        if(selectedImage != null) {
 
-        StorageReference filepath = this.storageReference.child("ImagensEventos").child(selectedImage.getLastPathSegment());
+            StorageReference filepath = this.storageReference.child("ImagensEventos").child(selectedImage.getLastPathSegment());
 
-        filepath.putFile(selectedImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                Uri downloadUri = taskSnapshot.getDownloadUrl();
-
-                //salvando url da imagem na classe usuarios'
-                urlImagem = downloadUri.toString();
-                evento.setImagemEvento(urlImagem);
-
-                //Picasso.get().load(downloadUri).fit().centerCrop().into(imgPerfil);
-
-                //Cria Evento e salva os dados
-                evento.salvarFirebaseEvento();
+            filepath.putFile(selectedImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
 
-            }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                prdUpload.setMessage("Criando evento...");
-            }
-        }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                prdUpload.dismiss();
-                alert("Evento criado com sucesso");
-                prdUpload.dismiss();
+                    Uri downloadUri = taskSnapshot.getDownloadUrl();
 
-                Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
-                startActivity(it);
-                finish();
+                    //salvando url da imagem na classe usuarios'
+                    urlImagem = downloadUri.toString();
+                    evento.setImagemEvento(urlImagem);
 
-            }
-        });
+                    //Picasso.get().load(downloadUri).fit().centerCrop().into(imgPerfil);
+
+                    //Cria Evento e salva os dados
+                    evento.salvarFirebaseEvento();
+
+
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    prdUpload.setMessage("Criando evento...");
+                }
+            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                   alert("Evento criado com sucesso");
+                    prdUpload.dismiss();
+                    Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
+                    startActivity(it);
+                    finish();
+
+                }
+            });
+
+        }else{
+            prdUpload.dismiss();
+            alert("E necessario a escolha de uma imagem para o evento");
+        }
     }
 
     private void alert(String s) {

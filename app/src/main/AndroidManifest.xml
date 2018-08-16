@@ -49,7 +49,8 @@
 
         <activity android:name=".Activity.ImagemEventoActivity" />
         <activity android:name=".Activity.EventoActivity" />
-        <activity android:name=".Activity.DadosUsuarios"></activity>
+        <activity android:name=".Activity.DadosUsuarios" />
+        <activity android:name=".Activity.EditarUsuarioActivity"></activity>
     </application>
 
 </manifest>

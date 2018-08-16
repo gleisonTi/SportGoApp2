@@ -30,7 +30,6 @@ public class Usuario {
 
     }
 
-
     public String getEstado() {
         return estado;
     }
@@ -117,8 +116,6 @@ public class Usuario {
         referenciaFirebase.child("usuarios").child(String.valueOf(getId())).setValue(this);
 
     }
-
-
 
     @Exclude
     public Map<String, Object> toMap(){

@@ -25,6 +25,7 @@ import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Helper.Base64Custom;
 import com.example.gleis.sportgoapp.Helper.SlidingTabLayout;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,6 +50,7 @@ public class MenuActivity extends AppCompatActivity
     private Usuario usuario;
     private FirebaseUser user;
     private DatabaseReference usuariodados;
+    private TinyDB tinyDB;
 
 
     @Override
@@ -58,7 +60,6 @@ public class MenuActivity extends AppCompatActivity
         //associa layou a variaveis slidingTabLayout e viewPager
         associa();
         setSupportActionBar(toolbar);
-
 
         // Configura Sliding Tab
         slidingTabLayout.setDistributeEvenly(true);
@@ -86,9 +87,9 @@ public class MenuActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         // pegar view lateral
         View hView =  navigationView.getHeaderView(0);
-
         imgPerfil = (CircleImageView) hView.findViewById(R.id.imagen_perfil_menu);
         nomePerfil = (TextView) hView.findViewById(R.id.id_nome_perfil);
         emailPerfil = (TextView) hView.findViewById(R.id.id_email_perfil);
@@ -107,13 +108,14 @@ public class MenuActivity extends AppCompatActivity
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-
+                        // adapta o retorno da função a classe Usuario
                         usuario = postSnapshot.getValue(Usuario.class);
-
-                        System.out.println("filho 222 ->"+user.getEmail()+"email :"+ usuario.getEmail());
-
+                        //encontra o usuario ativo no momento
                         if(user.getEmail().equals(usuario.getEmail())){
-                            System.out.println("chegamos aqui ze");
+                        // salva os dados do usuario para ser usado futuramente
+                            tinyDB.putObject("dadosUsuario",usuario);
+
+                        // popula o menu lateral com informaçoes do usuario
                             Picasso.get().load(usuario.getUrlImagem()).into(imgPerfil);
                             nomePerfil.setText(usuario.getNome());
                             emailPerfil.setText(usuario.getEmail());
@@ -133,6 +135,7 @@ public class MenuActivity extends AppCompatActivity
 
 
     private void associa() {
+        tinyDB = new TinyDB(MenuActivity.this);
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.stl_tabs);
         viewPager = (ViewPager) findViewById(R.id.vp_pagina);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
