@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.gleis.sportgoapp.Fragment.EventosFragment;
 import com.example.gleis.sportgoapp.Fragment.MapaFragment;
+import com.example.gleis.sportgoapp.Fragment.MeusEventosFragment;
 
 /**
  * Created by gleis on 26/03/2018.
@@ -13,7 +14,7 @@ import com.example.gleis.sportgoapp.Fragment.MapaFragment;
 
 public class TabAdapter extends FragmentStatePagerAdapter {
 
-    private  String[] tituloAbas = {"EVENTOS","MAPA"};
+    private  String[] tituloAbas = {"PARTICIPANDO","EVENTOS","MAPA"};
     public TabAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -24,9 +25,12 @@ public class TabAdapter extends FragmentStatePagerAdapter {
 
         switch (position){
             case 0:
-                fragment = new EventosFragment();
+                fragment = new MeusEventosFragment();
                 break;
             case 1:
+                fragment = new EventosFragment();
+                break;
+            case 2:
                 fragment = new MapaFragment();
                 break;
         }
