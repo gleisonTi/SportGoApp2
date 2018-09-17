@@ -25,6 +25,7 @@ import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Helper.Base64Custom;
 import com.example.gleis.sportgoapp.Helper.Preferencias;
 import com.example.gleis.sportgoapp.R;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,8 +34,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,15 +57,15 @@ public class CadastroActivity extends AppCompatActivity {
 
     public Button btnCadastrar;
 
-    private Usuario  usuario = new Usuario();
+    private Usuario usuario = new Usuario();
 
     private FirebaseAuth autenticacao;
 
     private StorageReference storageReference;
 
-    private  final  int GALERIA_IMAGENS = 1;
+    private final int GALERIA_IMAGENS = 1;
 
-    private  final int PERMISSAO_REQUEST = 2;
+    private final int PERMISSAO_REQUEST = 2;
 
     private ProgressDialog prdUpload;
 
@@ -81,15 +85,15 @@ public class CadastroActivity extends AppCompatActivity {
 
         storageReference = ConfiguraFirebase.getStorage();
         // teste de permissão da galeria
-        if(ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-            } else{
+            } else {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},PERMISSAO_REQUEST);
+                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSAO_REQUEST);
             }
         }
         //escolher imagem
@@ -97,7 +101,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i,GALERIA_IMAGENS );
+                startActivityForResult(i, GALERIA_IMAGENS);
             }
         });
         // cadastrar dados
@@ -105,7 +109,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // teste se há conexão
-                if(isOnline()){
+                if (isOnline()) {
 
                     prdUpload.setMessage("Salvando Dados ...");
                     prdUpload.show();
@@ -114,9 +118,9 @@ public class CadastroActivity extends AppCompatActivity {
 
                     String sexo = "";
 
-                    if(rbFeminino.isChecked()){
+                    if (rbFeminino.isChecked()) {
                         sexo = "Feminino";
-                    }else{
+                    } else {
                         sexo = "Masculino";
                     }
 
@@ -142,7 +146,7 @@ public class CadastroActivity extends AppCompatActivity {
                     salvarDados(salvaimagem);
 
                     alert("Cadastrando dados...");
-                }else{
+                } else {
                     alert("Sem conexão no momento :(");
                 }
 
@@ -161,8 +165,8 @@ public class CadastroActivity extends AppCompatActivity {
             //salvando imagem em uma variavel
             this.salvaimagem = selectedImage;
 
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
@@ -173,14 +177,37 @@ public class CadastroActivity extends AppCompatActivity {
     }
 
     private void salvarDados(Uri selectedImage) {
-            if(selectedImage != null) {
-                StorageReference filepath = storageReference.child("ImagensUsuarios").child(selectedImage.getLastPathSegment());
 
-                filepath.putFile(selectedImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        if (selectedImage != null) {
 
-                        Uri downloadUri = taskSnapshot.getDownloadUrl();
+            // pega o nome do arquivo para ser salvo
+            String filename = new File(selectedImage.getPath()).getName();
+
+            final StorageReference filepath = storageReference.child("ImagensUsuarios").child(filename);
+
+            filepath.putFile(selectedImage).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = 100.0 * (taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                    System.out.println("Upload is " + progress + "% done");
+                    int currentprogress = (int) progress;
+                    prdUpload.setProgress(currentprogress);
+                }
+            }).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return filepath.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+
+                        Uri downloadUri = task.getResult();
                         //salvando url da imagem na classe usuarios'
                         urlImagem = downloadUri.toString();
                         usuario.setUrlImagem(urlImagem);
@@ -188,25 +215,34 @@ public class CadastroActivity extends AppCompatActivity {
                         //Cria usuario e salva os dados
                         cadastrarUsuario();
 
+                    } else {
+                        Toast.makeText(getApplicationContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                });
-            }
+                }
+            });
+
+        } else {
+            prdUpload.dismiss();
+            alert("E necessario a escolha de uma imagem para identificação");
+        }
+
 
     }
 
 
-
-    @Override public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
-        if(requestCode== PERMISSAO_REQUEST) {
-            if(grantResults.length> 0&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == PERMISSAO_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // A permissão foi concedida. Pode continuar
-            } else{
+            } else {
                 // A permissão foi negada. Precisa ver o que deve ser desabilitado
-            }return;
+            }
+            return;
         }
     }
 
-    private void cadastrarUsuario(){
+    private void cadastrarUsuario() {
         // Criando usuario no firebase
         autenticacao = ConfiguraFirebase.getAutenticacao();
         autenticacao.createUserWithEmailAndPassword(
@@ -215,21 +251,20 @@ public class CadastroActivity extends AppCompatActivity {
         ).addOnCompleteListener(CadastroActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
 
                     String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
                     //FirebaseUser usuarioFirebase = task.getResult().getUser();
 
                     usuario.setId(identificadorUsuario);
 
-                    System.out.println("Mostrar Usuario: "+ usuario);
+                    System.out.println("Mostrar Usuario: " + usuario);
                     usuario.salvarFirebase();
-
 
 
                     Preferencias preferenciasAndroid = new Preferencias(CadastroActivity.this);
 
-                    preferenciasAndroid.salvarUsuarioPreferencias(identificadorUsuario,usuario.getNome());
+                    preferenciasAndroid.salvarUsuarioPreferencias(identificadorUsuario, usuario.getNome());
 
                     alert("Usuario Cadastrado com sucesso");
                     prdUpload.dismiss();
@@ -237,24 +272,22 @@ public class CadastroActivity extends AppCompatActivity {
                     startActivity(it);
                     finish();
 
-                }else
-                {
+                } else {
                     String erroExcecao = "";
-                    try{
+                    try {
                         throw task.getException();
-                    }catch (FirebaseAuthWeakPasswordException e){
+                    } catch (FirebaseAuthWeakPasswordException e) {
                         alert("Digite uma senha mais forte, ontendo no minimo 6 caracteres");
 
-                    }catch (FirebaseAuthInvalidCredentialsException e) {
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
                         alert("O e-mail digitado e inválido, digite um novo e-mail");
 
 
-                    }catch (FirebaseAuthUserCollisionException e ){
+                    } catch (FirebaseAuthUserCollisionException e) {
                         alert("Esse email já esta sendo utilizado ");
 
 
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         alert("Erro ao efetuar o Cadastro!");
                         e.printStackTrace();
                     }
@@ -265,7 +298,7 @@ public class CadastroActivity extends AppCompatActivity {
 
 
     private void alert(String txt) {
-        Toast.makeText(CadastroActivity.this, txt,Toast.LENGTH_SHORT).show();
+        Toast.makeText(CadastroActivity.this, txt, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -293,8 +326,6 @@ public class CadastroActivity extends AppCompatActivity {
         return manager.getActiveNetworkInfo() != null &&
                 manager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
-
-
 
 
 }

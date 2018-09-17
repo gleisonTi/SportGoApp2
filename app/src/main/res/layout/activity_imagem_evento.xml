@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#FFFF"
     tools:context="com.example.gleis.sportgoapp.Activity.ImagemEventoActivity">
 
     <TextView
@@ -11,14 +12,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="36dp"
         android:text="Por ultimo escolha uma imagem para ser publicada com o evento."
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView20" />
+        app:layout_constraintTop_toBottomOf="@+id/textView20"
+        android:layout_marginRight="8dp" />
 
     <TextView
         android:id="@+id/textView20"
@@ -26,23 +28,23 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="Crie um evento"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/id_imagem_evento"
         android:layout_width="0dp"
         android:layout_height="272dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/imagem_evento"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/imagem_evento"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,31 +53,30 @@
     <Button
         android:id="@+id/id_voltar_img"
         android:layout_width="@dimen/largura_btn_voltar"
-        android:layout_height="@dimen/altura_btn_voltar"
+        android:layout_height="@dimen/heihtButton"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="72dp"
+        android:background="@drawable/edittext_layout"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:backgroundTint="@color/color_btn"
         android:text="@string/btn_voltar"
         android:textColor="@color/edit_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_imagem_evento"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/id_btn_criar_evento"
         android:layout_width="189dp"
-        android:layout_height="@dimen/altura_btn_proximo"
+        android:layout_height="@dimen/heihtButton"
         android:layout_marginBottom="8dp"
+
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/edittext_layout"
         android:backgroundTint="@color/colorPrimary"
         android:text="Criar Evento"
         android:textColor="@color/edit_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_imagem_evento"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

@@ -6,6 +6,7 @@
     <color name="color_btn">#ff5f5f</color>
     <color name="edit_text_color">#ffffff</color>
 
-    <color name="colorPrimaryText">#121010</color>
+    <color name="colorPrimaryText">#1d1d1d</color>
     <color name="colorSecondText">#afafaf</color>
+    <color name="editTextPrimary">#dadada</color>
 </resources>

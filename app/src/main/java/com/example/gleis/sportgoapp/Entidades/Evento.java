@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 
@@ -16,7 +17,6 @@ import java.util.Timer;
 public class Evento implements Parcelable {
 
     private String idEvento;
-    private String idUsuario;
     private String tituloEvento;
     private String tipoEvento;
     private Integer qtdParticipante;
@@ -27,15 +27,23 @@ public class Evento implements Parcelable {
     private Double enderecolng;
     private String endereco;
     private String imagemEvento;
+    private Usuario UsuarioCriador;
 
+    public Usuario getUsuarioCriador() {
+        return UsuarioCriador;
+    }
+
+    public void setUsuarioCriador(Usuario usuarioCriador) {
+        UsuarioCriador = usuarioCriador;
+    }
 
     public Evento() {
+
     }
 
     // contrutor para utilizar o parcelable para passar os dados para outra actyvity
     protected Evento(Parcel in) {
         idEvento = in.readString();
-        idUsuario = in.readString();
         tituloEvento = in.readString();
         tipoEvento = in.readString();
         if (in.readByte() == 0) {
@@ -86,13 +94,7 @@ public class Evento implements Parcelable {
         this.idEvento = idEvento;
     }
 
-    public String getIdUsuario() {
-        return idUsuario;
-    }
 
-    public void setIdUsuario(String idUsuario) {
-        this.idUsuario = idUsuario;
-    }
 
     public String getTituloEvento() {
         return tituloEvento;
@@ -182,7 +184,6 @@ public class Evento implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(idEvento);
-        dest.writeString(idUsuario);
         dest.writeString(tituloEvento);
         dest.writeString(tipoEvento);
         if (qtdParticipante == null) {
@@ -208,5 +209,23 @@ public class Evento implements Parcelable {
         }
         dest.writeString(endereco);
         dest.writeString(imagemEvento);
+    }
+
+    @Override
+    public String toString() {
+        return "Evento{" +
+                "idEvento='" + idEvento + '\'' +
+                ", tituloEvento='" + tituloEvento + '\'' +
+                ", tipoEvento='" + tipoEvento + '\'' +
+                ", qtdParticipante=" + qtdParticipante +
+                ", dataEvento='" + dataEvento + '\'' +
+                ", horaEvento='" + horaEvento + '\'' +
+                ", DescricaoEvento='" + DescricaoEvento + '\'' +
+                ", enderecolat=" + enderecolat +
+                ", enderecolng=" + enderecolng +
+                ", endereco='" + endereco + '\'' +
+                ", imagemEvento='" + imagemEvento + '\'' +
+                ", UsuarioCriador=" + UsuarioCriador +
+                '}';
     }
 }

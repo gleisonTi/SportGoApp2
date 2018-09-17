@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.gleis.sportgoapp.Entidades.Evento;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +31,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class LocalMapaActivity extends AppCompatActivity {
 
@@ -40,7 +43,8 @@ public class LocalMapaActivity extends AppCompatActivity {
     private Double lat;
     private Double lng;
     private String endereco;
-
+    private TinyDB tinyDB;
+    private Evento evento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class LocalMapaActivity extends AppCompatActivity {
         associaVariaveis();
         mapa.onCreate(savedInstanceState);
 
+        // pega objeto evento salvo na memoria
+        evento = tinyDB.getObject("evento",Evento.class);
 
         btnLocal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,45 +64,19 @@ public class LocalMapaActivity extends AppCompatActivity {
             }
         });
 
-
         btnProximo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //bundle de dados do CriarEventoActivity
-                Intent itcadastro = getIntent();
-                Bundle bundle = itcadastro.getExtras();
+                // passando dados de lat, lng e endereco do evento
+                evento.setEnderecolat(lat);
+                evento.setEnderecolng(lng);
+                evento.setEndereco(endereco);
+                //salva novamente os dados na memoria
+                tinyDB.putObject("evento",evento);
+                // devera ser criado condição para avançar
 
                 Intent it = new Intent(LocalMapaActivity.this, ImagemEventoActivity.class);
-
-                //recebendo dados da activity CriarEventoActivity;
-                String titulo = bundle.getString("titulo");
-                String tipo = bundle.getString("tipo");
-                String qtdEvento = bundle.getString("qtdEvento");
-                String data = bundle.getString("data");
-                String hora = bundle.getString("hora");
-                String descricao = bundle.getString("descricao");
-                Double latitude = lat;
-                Double longitude = lng;
-                String enderecobunble = endereco;
-
-                Log.d("endereco", "--> " + enderecobunble);
-                //nova bundle para envio de dados para outra activity
-                Bundle bundleLocal = new Bundle();
-
-                bundleLocal.putString("titulo", titulo);
-                bundleLocal.putString("tipo", tipo);
-                bundleLocal.putString("qtdEvento", qtdEvento);
-                bundleLocal.putString("data", data);
-                bundleLocal.putString("hora", hora);
-                bundleLocal.putString("descricao", descricao);
-                bundleLocal.putString("titulo", titulo);
-                bundleLocal.putDouble("latitude", latitude);
-                bundleLocal.putDouble("longitude", longitude);
-                bundleLocal.putString("endereco", enderecobunble);
-
-                it.putExtras(bundleLocal);
-
                 startActivity(it);
                 finish();
 
@@ -116,7 +96,7 @@ public class LocalMapaActivity extends AppCompatActivity {
 
     private void buscarLatLngEndereco(String endereco) {
 
-        Geocoder geocoder = new Geocoder(LocalMapaActivity.this);
+        Geocoder geocoder = new Geocoder(LocalMapaActivity.this, Locale.getDefault());
         try {
             List<Address> enderecos = geocoder.getFromLocationName(endereco, 1);
             if (enderecos.size() > 0) {
@@ -133,7 +113,7 @@ public class LocalMapaActivity extends AppCompatActivity {
 
     private void buscarEnderecoLatLng(Double lat, Double lng) {
 
-        Geocoder geocoder = new Geocoder(LocalMapaActivity.this);
+        Geocoder geocoder = new Geocoder(LocalMapaActivity.this, Locale.getDefault());
         try {
             List<Address> enderecos = geocoder.getFromLocation(lat, lng, 1);
             if (enderecos.size() > 0) {
@@ -151,6 +131,8 @@ public class LocalMapaActivity extends AppCompatActivity {
     }
 
     private void associaVariaveis() {
+
+        tinyDB = new TinyDB(this);
         mapa = (MapView) findViewById(R.id.id_mapa_local);
         adress = (EditText) findViewById(R.id.id_hora_evento);
         btnLocal = (ImageView) findViewById(R.id.id_procurar_loc);
@@ -176,7 +158,7 @@ public class LocalMapaActivity extends AppCompatActivity {
                 googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                     @Override
                     public void onMarkerDragStart(Marker marker) {
-                        Toast.makeText(LocalMapaActivity.this, "Dragging Start",
+                        Toast.makeText(LocalMapaActivity.this, "Escolha um local",
                                 Toast.LENGTH_SHORT).show();
                     }
 

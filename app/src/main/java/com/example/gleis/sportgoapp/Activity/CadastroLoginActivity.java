@@ -13,7 +13,7 @@ import com.example.gleis.sportgoapp.R;
 
 import java.util.regex.Pattern;
 
-public class CadastroLoginActivity extends AppCompatActivity {
+public class    CadastroLoginActivity extends AppCompatActivity {
 
     private EditText edtEmail;
     private EditText edtConfEmail;

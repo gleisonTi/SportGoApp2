@@ -50,7 +50,8 @@
         <activity android:name=".Activity.ImagemEventoActivity" />
         <activity android:name=".Activity.EventoActivity" />
         <activity android:name=".Activity.DadosUsuarios" />
-        <activity android:name=".Activity.EditarUsuarioActivity"></activity>
+        <activity android:name=".Activity.EditarUsuarioActivity" />
+        <activity android:name=".Activity.ChatActivity"></activity>
     </application>
 
 </manifest>

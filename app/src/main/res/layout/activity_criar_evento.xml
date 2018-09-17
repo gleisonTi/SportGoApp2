@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:backgroundTint="#FFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.gleis.sportgoapp.Activity.CriarEventoActivity">
@@ -10,11 +11,11 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="36dp"
         android:text="Crie um evento"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -29,12 +30,12 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="64dp"
         android:text="Aqui você podera criar um evento esportivo para ser publicado para todos os usuarios."
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -47,87 +48,96 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento">
 
-        <android.support.design.widget.TextInputLayout
+        <EditText
             android:id="@+id/id_tipo_evento"
             android:layout_width="175dp"
-            android:layout_height="63dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:hint="Tipo do evento"
+            android:inputType="textCapSentences"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
             android:theme="@style/AppTheme"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento"
-            tools:ignore="MissingConstraints">
+            tools:ignore="MissingConstraints" />
 
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="165dp"
-                android:layout_height="match_parent"
-                android:hint="Tipo do evento"
-                android:inputType="textCapSentences" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/id_qtd_evento"
-            android:layout_width="168dp"
-            android:layout_height="63dp"
+        <ImageView
+            android:layout_marginLeft="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:theme="@style/AppTheme"
-            tools:ignore="MissingConstraints">
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:padding="6dp"
+            android:src="@drawable/ic_action_users" />
 
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="158dp"
-                android:layout_height="match_parent"
-                android:hint="Nun. participantes"
-                android:inputType="numberSigned" />
 
-        </android.support.design.widget.TextInputLayout>
+        <EditText
+            android:id="@+id/id_qtd_evento"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:hint="Nº"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
 
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento"
+            tools:ignore="MissingConstraints"></EditText>
 
     </LinearLayout>
 
 
-
-    <android.support.design.widget.TextInputLayout
+    <EditText
         android:id="@+id/id_titulo_evento"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
-        android:theme="@style/AppTheme"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/edittext_layout"
+        android:backgroundTint="@color/editTextPrimary"
+        android:hint="Titulo do evento"
+        android:inputType="textCapSentences"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView15"
         tools:ignore="MissingConstraints">
 
-        <android.support.design.widget.TextInputEditText
-
-            android:layout_width="327dp"
-            android:layout_height="wrap_content"
-            android:hint="Titulo do evento"
-            android:inputType="textCapSentences" />
-
-    </android.support.design.widget.TextInputLayout>
-
-
+    </EditText>
 
 
     <EditText
         android:id="@+id/id_descricao"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_height="93dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:hint="Descrição do Evento"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_layout"
+        android:backgroundTint="@color/editTextPrimary"
         android:gravity="top"
+        android:hint="Descrição do Evento"
         android:inputType="textMultiLine"
-        android:textSize="18sp"
-        android:padding="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/datas" />
 
@@ -135,86 +145,84 @@
     <Button
         android:id="@+id/id_btn_voltar"
         android:layout_width="100dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/heihtButton"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:background="@drawable/edittext_layout"
         android:backgroundTint="@color/color_btn"
         android:text="Voltar"
         android:textColor="@color/edit_text_color"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_descricao"
-        app:layout_constraintVertical_bias="1.0"
-        tools:ignore="MissingConstraints"
-        android:layout_marginLeft="16dp" />
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/id_btn_proximo"
         android:layout_width="150dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/heihtButton"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/edittext_layout"
         android:backgroundTint="@color/colorPrimary"
         android:text="Proximo"
         android:textColor="@color/edit_text_color"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_descricao"
-        app:layout_constraintVertical_bias="1.0"
-        tools:ignore="MissingConstraints"
-        android:layout_marginRight="16dp" />
+        tools:ignore="MissingConstraints" />
 
     <LinearLayout
         android:id="@+id/datas"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="56dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/lltn"
-        tools:layout_editor_absoluteX="16dp"
-        tools:ignore="MissingConstraints">
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp">
 
 
-       <ImageView
-           android:id="@+id/img_data"
-           android:layout_width="50dp"
-           android:layout_height="50dp"
-           android:layout_marginTop="@dimen/activity_horizontal_margin"
-           android:layout_marginLeft="@dimen/activity_horizontal_margin"
-           android:src="@drawable/ic_action_calendar_day"/>
+        <ImageView
+            android:id="@+id/img_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:padding="6dp"
+            android:src="@drawable/ic_action_calendar_day" />
 
         <TextView
             android:id="@+id/id_tv_data"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_gravity="center"
-            android:text="dd/MM/aaaa" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Data" />
 
         <ImageView
             android:id="@+id/img_hora"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
-            android:src="@drawable/ic_action_clock"/>
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:padding="5dp"
+            android:src="@drawable/ic_action_clock" />
 
         <TextView
             android:id="@+id/id_tv_hora"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_gravity="center"
-            android:text="HH:mm" />
-
-
-
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Hora" />
 
 
     </LinearLayout>

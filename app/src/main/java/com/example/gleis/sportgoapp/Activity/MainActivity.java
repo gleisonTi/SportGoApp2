@@ -81,6 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void usuarioLogado() {
+        // testa se o usuario esta logado
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Toast.makeText(this,
+                    "Welcome " + FirebaseAuth.getInstance()
+                            .getCurrentUser().getEmail(),
+                    Toast.LENGTH_LONG)
+                    .show();
+            Intent it = new Intent(MainActivity.this,MainActivity.class);
+            startActivity(it);
+        }
+    }
+
     private void alert(String txt) {
         Toast.makeText(MainActivity.this, txt, Toast.LENGTH_SHORT).show();
     }

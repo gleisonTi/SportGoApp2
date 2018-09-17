@@ -1,9 +1,21 @@
 package com.example.gleis.sportgoapp.Activity;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -27,6 +39,10 @@ import com.example.gleis.sportgoapp.Helper.Base64Custom;
 import com.example.gleis.sportgoapp.Helper.SlidingTabLayout;
 import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +55,7 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
@@ -52,6 +68,13 @@ public class MenuActivity extends AppCompatActivity
     private DatabaseReference usuariodados;
     private TinyDB tinyDB;
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private GoogleApiClient mGoogleApiClient;
+
+    /**
+     * Guarda a ultima posição do smartphone.
+     */
+    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +84,22 @@ public class MenuActivity extends AppCompatActivity
         associa();
         setSupportActionBar(toolbar);
 
+        //permissão de gps
+        checkLocationPermission();
+
+
+        // Vamos instanciar o GoogleApiClient, caso seja nulo
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this) // Interface ConnectionCallbacks
+                    .addOnConnectionFailedListener(this) //Interface OnConnectionFailedListener
+                    .addApi(LocationServices.API) // Vamos a API do LocationServices
+                    .build();
+        }
+
         // Configura Sliding Tab
         slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(this,R.color.edit_text_color));
+        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(this, R.color.edit_text_color));
 
 
         //Configurar Adapter
@@ -75,7 +111,7 @@ public class MenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent itCadEvento = new Intent(MenuActivity.this,CriarEventoActivity.class);
+                Intent itCadEvento = new Intent(MenuActivity.this, CriarEventoActivity.class);
                 startActivity(itCadEvento);
             }
         });
@@ -89,7 +125,7 @@ public class MenuActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         // pegar view lateral
-        View hView =  navigationView.getHeaderView(0);
+        View hView = navigationView.getHeaderView(0);
         imgPerfil = (CircleImageView) hView.findViewById(R.id.imagen_perfil_menu);
         nomePerfil = (TextView) hView.findViewById(R.id.id_nome_perfil);
         emailPerfil = (TextView) hView.findViewById(R.id.id_email_perfil);
@@ -98,24 +134,55 @@ public class MenuActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+        }
+    }
+    @Override
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
     private void associaDadosFirebase() {
 
         usuariodados = ConfiguraFirebase.getFirebase();
         user = ConfiguraFirebase.getAutenticacao().getCurrentUser();
-        if(user != null){
+        if (user != null) {
             usuariodados.child("usuarios").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         // adapta o retorno da função a classe Usuario
                         usuario = postSnapshot.getValue(Usuario.class);
                         //encontra o usuario ativo no momento
-                        if(user.getEmail().equals(usuario.getEmail())){
-                        // salva os dados do usuario para ser usado futuramente
-                            tinyDB.putObject("dadosUsuario",usuario);
-
-                        // popula o menu lateral com informaçoes do usuario
+                        if (user.getEmail().equals(usuario.getEmail())) {
+                            // salva os dados do usuario para ser usado futuramente
+                            tinyDB.putObject("dadosUsuario", usuario);
+                            // popula o menu lateral com informaçoes do usuario
                             Picasso.get().load(usuario.getUrlImagem()).into(imgPerfil);
                             nomePerfil.setText(usuario.getNome());
                             emailPerfil.setText(usuario.getEmail());
@@ -123,6 +190,7 @@ public class MenuActivity extends AppCompatActivity
                         }
                     }
                 }
+
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
@@ -149,6 +217,7 @@ public class MenuActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 
@@ -182,7 +251,7 @@ public class MenuActivity extends AppCompatActivity
 
         if (id == R.id.id_conta) {
 
-            Intent itconta = new Intent(MenuActivity.this,DadosUsuarios.class);
+            Intent itconta = new Intent(MenuActivity.this, DadosUsuarios.class);
             startActivity(itconta);
 
         } else if (id == R.id.id_eventos) {
@@ -190,13 +259,15 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.id_eventos_criados) {
 
         } else if (id == R.id.id_amigos) {
+            Intent itchat = new Intent(MenuActivity.this, ChatActivity.class);
+            startActivity(itchat);
 
         } else if (id == R.id.id_sair) {
 
             FirebaseAuth auth = ConfiguraFirebase.getAutenticacao();
             auth.signOut();
 
-            Intent it = new Intent(MenuActivity.this,MainActivity.class);
+            Intent it = new Intent(MenuActivity.this, MainActivity.class);
 
             startActivity(it);
         }
@@ -204,5 +275,111 @@ public class MenuActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // pegamos a ultima localização
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if (mLastLocation != null) {
+            // Criamos o LatLng através do Location
+            final LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            tinyDB.putObject("latlngAtual",latLng);
+        }
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    // func resposavel pela permição
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Permissão de Localização")
+                        .setMessage("O aplicativo necessita de permissão de acesso ao gps, permitir?")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MenuActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        //Request location updates:
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
     }
 }

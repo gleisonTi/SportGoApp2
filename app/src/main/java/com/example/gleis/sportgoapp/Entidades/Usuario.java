@@ -25,11 +25,9 @@ public class Usuario {
         private String sexo;
         private String UrlImagem;
 
-
     public Usuario() {
 
     }
-
     public String getEstado() {
         return estado;
     }
@@ -53,7 +51,7 @@ public class Usuario {
     public void setSexo(String sexo) {
         this.sexo = sexo;
     }
-    @Exclude
+
     public String getId() {
         return id;
     }
@@ -114,7 +112,6 @@ public class Usuario {
 
         DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
         referenciaFirebase.child("usuarios").child(String.valueOf(getId())).setValue(this);
-
     }
 
     @Exclude

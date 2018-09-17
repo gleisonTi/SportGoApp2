@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margenBalaoBottom"
+    android:layout_marginLeft="@dimen/margenLeftChat"
+    android:layout_marginStart="@dimen/margenLeftChat">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/drawable_rigth_layout"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/paddingBalaoDirBottom"
+        android:paddingEnd="@dimen/paddingBalaoDirRight"
+        android:paddingLeft="@dimen/paddingBalaoDirLeft"
+        android:paddingRight="@dimen/paddingBalaoDirRight"
+        android:paddingStart="@dimen/paddingBalaoDirLeft"
+        android:paddingTop="@dimen/paddingBalaoDirTop"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/mensagem"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_chat"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/data_hora"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="12dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -18,6 +18,7 @@ import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Helper.Base64Custom;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.example.gleis.sportgoapp.Services.BuscaEnderecoLatLong;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,7 +47,7 @@ public class MapaFragment extends Fragment {
     private List<Evento> listaEvento;
     private DatabaseReference referenceFirebase;
     private Evento todosEventos;
-
+    private TinyDB tinyDB;
     private Usuario usuario;
     private FirebaseUser user;
     private DatabaseReference usuariodados;
@@ -64,6 +65,8 @@ public class MapaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mapa, container, false);
+        // iniciando Tinydb
+        tinyDB =  new TinyDB(getContext());
         //inicializando mapa
         mapView = (MapView) view.findViewById(R.id.mapViewEventos);
         mapView.onCreate(savedInstanceState);
@@ -123,7 +126,11 @@ public class MapaFragment extends Fragment {
     //buscando dados do usuario para recuper latlng//
     private void associaDadosFirebase() {
 
-        usuariodados = ConfiguraFirebase.getFirebase();
+        // pega localização do dispositivo para iniciar o mapa
+        latLngRegiao = tinyDB.getObject("latlngAtual",LatLng.class);
+
+        // pega dados a partir da cidade do usuario
+        /*usuariodados = ConfiguraFirebase.getFirebase();
         user = ConfiguraFirebase.getAutenticacao().getCurrentUser();
         if(user != null){
             usuariodados.child("usuarios").child(Base64Custom.codificarBase64(user.getEmail())).addValueEventListener(new ValueEventListener() {
@@ -150,7 +157,7 @@ public class MapaFragment extends Fragment {
             });
 
 
-        }
+        }*/
     }
 
 

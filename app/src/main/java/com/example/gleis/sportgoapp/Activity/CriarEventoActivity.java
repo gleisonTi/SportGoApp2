@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.gleis.sportgoapp.Entidades.Evento;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 
@@ -33,16 +35,17 @@ public class CriarEventoActivity extends AppCompatActivity {
     Calendar dateTime = Calendar.getInstance();
     private TextView tvData;
     private TextView tvHora;
-    private TextInputLayout tituloEvento;
-    private TextInputLayout tipoEvento;
-    private TextInputLayout qtdParticipante;
+    private EditText tituloEvento;
+    private EditText tipoEvento;
+    private EditText qtdParticipante;
     private EditText descricaoEvento;
 
     private ImageView imgData;
     private ImageView imgHora;
     private Button btnVoltar;
     private Button btnProximo;
-
+    private TinyDB tinyDB;
+    private Evento evento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public class CriarEventoActivity extends AppCompatActivity {
         // assiciar layout nas variveis
         associaVariaveis();
 
+        // criação do evento
+        evento = new Evento();
 
         btnVoltar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,22 +74,16 @@ public class CriarEventoActivity extends AppCompatActivity {
                     Intent it = new Intent(CriarEventoActivity.this, LocalMapaActivity.class);
                     Bundle bundle = new Bundle();
 
-                    String titulo = tituloEvento.getEditText().getText().toString();
-                    String tipo = tipoEvento.getEditText().getText().toString();
-                    String qtdEvento = qtdParticipante.getEditText().getText().toString();
-                    String descricao = descricaoEvento.getText().toString();
-                    String data = tvData.getText().toString();
-                    String hora = tvHora.getText().toString();
+                    // passando dados para o objeto evento
+                    evento.setTituloEvento(tituloEvento.getText().toString());
+                    evento.setTipoEvento(tipoEvento.getText().toString());
+                    evento.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
+                    evento.setDescricaoEvento(descricaoEvento.getText().toString());
+                    evento.setDataEvento(tvData.getText().toString());
+                    evento.setHoraEvento(tvHora.getText().toString());
 
-
-                    bundle.putString("titulo",titulo);
-                    bundle.putString("tipo",tipo);
-                    bundle.putString("qtdEvento",qtdEvento);
-                    bundle.putString("data",data);
-                    bundle.putString("hora",hora);
-                    bundle.putString("descricao",descricao);
-
-                    it.putExtras(bundle);
+                    // salvando evento na memoria
+                    tinyDB.putObject("evento",evento);
 
                     startActivity(it);
 
@@ -118,9 +117,10 @@ public class CriarEventoActivity extends AppCompatActivity {
 
     private void associaVariaveis() {
 
-        this.tituloEvento = (TextInputLayout) findViewById(R.id.id_titulo_evento);
-        this.tipoEvento = (TextInputLayout) findViewById(R.id.id_tipo_evento);
-        this.qtdParticipante = (TextInputLayout) findViewById(R.id.id_qtd_evento);
+        tinyDB = new TinyDB(this);
+        this.tituloEvento = (EditText) findViewById(R.id.id_titulo_evento);
+        this.tipoEvento = (EditText) findViewById(R.id.id_tipo_evento);
+        this.qtdParticipante = (EditText) findViewById(R.id.id_qtd_evento);
         this.descricaoEvento = (EditText) findViewById(R.id.id_descricao);
         this.tvData = (TextView) findViewById(R.id.id_tv_data);
         this.tvHora = (TextView) findViewById(R.id.id_tv_hora);
