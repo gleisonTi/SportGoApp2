@@ -1,10 +1,13 @@
 package com.example.gleis.sportgoapp.Activity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -26,6 +30,8 @@ import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CriarEventoActivity extends AppCompatActivity {
 
@@ -46,9 +52,10 @@ public class CriarEventoActivity extends AppCompatActivity {
     private Button btnProximo;
     private TinyDB tinyDB;
     private Evento evento;
+    private Evento eventoEdit;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_criar_evento);
         // assiciar layout nas variveis
@@ -60,20 +67,38 @@ public class CriarEventoActivity extends AppCompatActivity {
         btnVoltar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tinyDB.remove("flagDeEdicao");
                 finish();
             }
         });
+
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            alert("flag edicao ativo");
+            btnProximo.setText("Salvar Alterações");
+            btnVoltar.setVisibility(View.GONE);
+
+            eventoEdit = tinyDB.getObject("eventoEdit", Evento.class);
+            tituloEvento.setText(eventoEdit.getTituloEvento());
+            tipoEvento.setText(eventoEdit.getTipoEvento());
+            qtdParticipante.setText(String.valueOf(eventoEdit.getQtdParticipante()));
+            descricaoEvento.setText(eventoEdit.getDescricaoEvento());
+            tvData.setText(eventoEdit.getDataEvento());
+            tvHora.setText(eventoEdit.getHoraEvento());
+
+
+        } else {
+            btnProximo.setText("Proximo");
+            btnVoltar.setVisibility(View.VISIBLE);
+        }
 
 
         btnProximo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isOnline()) {
 
-                if(isOnline()){
                     // Envio de dados para activity LocalMapaActivity
                     Intent it = new Intent(CriarEventoActivity.this, LocalMapaActivity.class);
-                    Bundle bundle = new Bundle();
-
                     // passando dados para o objeto evento
                     evento.setTituloEvento(tituloEvento.getText().toString());
                     evento.setTipoEvento(tipoEvento.getText().toString());
@@ -82,14 +107,42 @@ public class CriarEventoActivity extends AppCompatActivity {
                     evento.setDataEvento(tvData.getText().toString());
                     evento.setHoraEvento(tvHora.getText().toString());
 
-                    // salvando evento na memoria
-                    tinyDB.putObject("evento",evento);
+                    if (tinyDB.getBoolean("flagDeEdicao")) {
 
-                    startActivity(it);
+                        new AlertDialog.Builder(CriarEventoActivity.this)
+                                .setTitle("Edição de Evento")
+                                .setMessage("deseja editar o evento "+eventoEdit.getTituloEvento()+"?")
+                                .setPositiveButton("sim",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                               /* eventoEdit.setTituloEvento(tituloEvento.getText().toString());
+                                                eventoEdit.setTipoEvento(tipoEvento.getText().toString());
+                                                eventoEdit.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
+                                                eventoEdit.setDescricaoEvento(descricaoEvento.getText().toString());
+                                                eventoEdit.setDataEvento(tvData.getText().toString());
+                                                eventoEdit.setHoraEvento(tvHora.getText().toString());*/
 
-                    alert("Salvando dados...");
+                                                Map<String,Object> taskMap = new HashMap<String,Object>();
+                                                // add hash map nesse formato
+                                                taskMap.put("tipoEvento",tipoEvento.getText().toString());
+                                                //salva edições do evento
+                                                eventoEdit.atualizaFirebaseEvento(taskMap);
+                                                alert("Foram salvas alterações no evento "+eventoEdit.getTituloEvento());
+                                                finish();
+                                            }
+                                        })
+                                .setNegativeButton("não", null)
+                                .show();
 
-                    finish();
+                    } else{
+                        // salvando evento na memoria
+                        tinyDB.putObject("evento", evento);
+                        startActivity(it);
+                        alert("Salvando dados...");
+                        finish();
+                    }
+
                 }
 
             }
@@ -112,7 +165,7 @@ public class CriarEventoActivity extends AppCompatActivity {
     }
 
     private void alert(String texto) {
-        Toast.makeText(CriarEventoActivity.this,texto,Toast.LENGTH_LONG).show();
+        Toast.makeText(CriarEventoActivity.this, texto, Toast.LENGTH_LONG).show();
     }
 
     private void associaVariaveis() {
@@ -125,18 +178,18 @@ public class CriarEventoActivity extends AppCompatActivity {
         this.tvData = (TextView) findViewById(R.id.id_tv_data);
         this.tvHora = (TextView) findViewById(R.id.id_tv_hora);
 
-        this.imgData =(ImageView) findViewById(R.id.img_data);
-        this.imgHora =(ImageView) findViewById(R.id.img_hora);
+        this.imgData = (ImageView) findViewById(R.id.img_data);
+        this.imgHora = (ImageView) findViewById(R.id.img_hora);
         this.btnVoltar = (Button) findViewById(R.id.id_btn_voltar);
         this.btnProximo = (Button) findViewById(R.id.id_btn_proximo);
 
     }
 
-    private void updateDate(){
-        new DatePickerDialog(this, d, dateTime.get(Calendar.YEAR),dateTime.get(Calendar.MONTH),dateTime.get(Calendar.DAY_OF_MONTH)).show();
+    private void updateDate() {
+        new DatePickerDialog(this, d, dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DAY_OF_MONTH)).show();
     }
 
-    private void updateTime(){
+    private void updateTime() {
         new TimePickerDialog(this, t, dateTime.get(Calendar.HOUR_OF_DAY), dateTime.get(Calendar.MINUTE), true).show();
     }
 
@@ -159,10 +212,11 @@ public class CriarEventoActivity extends AppCompatActivity {
         }
     };
 
-    private void updateTextLabelDate(){
+    private void updateTextLabelDate() {
         tvData.setText(dataFormat.format(dateTime.getTime()));
     }
-    private void updateTextLabelHora(){
+
+    private void updateTextLabelHora() {
         tvHora.setText(timeFormat.format(dateTime.getTime()));
     }
 
@@ -171,5 +225,12 @@ public class CriarEventoActivity extends AppCompatActivity {
 
         return manager.getActiveNetworkInfo() != null &&
                 manager.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        tinyDB.remove("flagDeEdicao");
+        finish();
     }
 }

@@ -6,15 +6,11 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.Activity.EventoActivity;
 import com.example.gleis.sportgoapp.Adapter.EventosAdapter;
@@ -22,12 +18,10 @@ import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Interfaces.RecyclerViewOnClickListenerHack;
 import com.example.gleis.sportgoapp.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +122,7 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
     }
 
     @Override
-    public void onClickListener(View view, int position) {
+    public void onClickListener(View view, int position, boolean b) {
         Intent it = new Intent(getActivity(), EventoActivity.class);
         it.putExtra("evento",listaEvento.get(position));
         getActivity().finish();

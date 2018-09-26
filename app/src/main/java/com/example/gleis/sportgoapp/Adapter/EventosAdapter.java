@@ -218,7 +218,7 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHo
         @Override
         public void onClick(View v) {
             if (recyclerViewOnClickListenerHack != null){
-                recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition());
+                recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition(), false);
             }
         }
 

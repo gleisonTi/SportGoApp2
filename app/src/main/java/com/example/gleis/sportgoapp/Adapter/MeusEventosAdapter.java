@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,20 +17,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.Activity.ChatActivity;
+import com.example.gleis.sportgoapp.Activity.CriarEventoActivity;
+import com.example.gleis.sportgoapp.Activity.DadosUsuarios;
+import com.example.gleis.sportgoapp.Activity.EventoActivity;
+import com.example.gleis.sportgoapp.Activity.ImagemEventoActivity;
+import com.example.gleis.sportgoapp.Activity.LocalMapaActivity;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Interfaces.RecyclerViewOnClickListenerHack;
 import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static java.security.AccessController.getContext;
 
@@ -92,6 +106,7 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
 
                     todosEventos = postSnapshot.getValue(Evento.class);
                     Picasso.get().load(todosEventos.getImagemEvento()).resize(width, height).centerCrop().into(holder.imgEvento);
+                    Picasso.get().load(todosEventos.getUsuarioCriador().getUrlImagem()).resize(width, height).centerCrop().into(holder.imgCriador);
                     eventos.add(todosEventos);
                     // pega quantidade de participantes
                     for (DataSnapshot post : postSnapshot.child("participantes").getChildren()) {
@@ -112,7 +127,9 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
         holder.tvDescricao.setText(itemEvento.getDescricaoEvento());
         holder.tvData.setText(itemEvento.getDataEvento());
         holder.tvMaxParticpantes.setText("/ " + String.valueOf(itemEvento.getQtdParticipante()));
-
+        if(itemEvento.getUsuarioCriador().getEmail().equals(tinyDB.getObject("dadosUsuario", Usuario.class).getEmail())){
+            holder.imgadm.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -121,6 +138,7 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
         return listaEventos.size();
     }
 
+
     public void setRecyclerViewOnClickListenerHack(RecyclerViewOnClickListenerHack r) {
         this.recyclerViewOnClickListenerHack = r;
     }
@@ -128,26 +146,28 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-        public ImageView imgEvento;
+        public CircleImageView imgEvento;
         public TextView tvTitulo;
         public TextView tvDescricao;
         public TextView tvData;
         public TextView tvQtdParticpantes;
         public TextView tvMaxParticpantes;
-        public TextView tvDistancia;
-        public Button btnDetalhes;
-        public Button btnParticipar;
+        public CircleImageView imgCriador;
+        public ImageView imgadm;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            imgEvento = (ImageView) itemView.findViewById(R.id.img_evento);
+            imgEvento = (CircleImageView) itemView.findViewById(R.id.img_evento);
+            imgCriador = (CircleImageView) itemView.findViewById(R.id.img_perfil_usuario_criador);
+            imgadm = (ImageView) itemView.findViewById(R.id.img_criador);
+
             tvTitulo = (TextView) itemView.findViewById(R.id.titulo);
             tvDescricao = (TextView) itemView.findViewById(R.id.descricao);
             tvData = (TextView) itemView.findViewById(R.id.id_data);
             tvQtdParticpantes = (TextView) itemView.findViewById(R.id.id_qtd_participantes);
             tvMaxParticpantes = (TextView) itemView.findViewById(R.id.id_max_participantes);
-
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -168,6 +188,7 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             builder.setTitle("Escolha uma opção");
             // se o criador do evento e o que esta logado
             if (listaEventos.get(getAdapterPosition()).getUsuarioCriador().getEmail().equals(tinyDB.getObject("dadosUsuario", Usuario.class).getEmail())) {
+                //mostra marcador dos evento
                 String[] animals = {"Ver Detalhes", "Ver Participantes", "Editar Evento", "Cancelar Evento",};
                 builder.setItems(animals, new DialogInterface.OnClickListener() {
                     @Override
@@ -175,12 +196,17 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
                         switch (which) {
                             case 0:
                                 verDetalhes(v);
+                                break;
                             case 1:
                                 verParticipantes();
+                                break;
                             case 2:
                                 editarEvento();
+                                break;
                             case 3:
                                 cancelarEvento();
+                                break;
+                            default:
                         }
                     }
                 });
@@ -192,10 +218,26 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
                         switch (which) {
                             case 0:
                                 verDetalhes(v);
+                                break;
                             case 1:
                                 verParticipantes();
+                                break;
                             case 2:
-                                sairDoEvento();
+                                final String nomeEvento = listaEventos.get(getAdapterPosition()).getTituloEvento();
+                                new AlertDialog.Builder(mcontext)
+                                        .setTitle(nomeEvento)
+                                        .setMessage("Você esta prestes a sair deste evento deseja continuar?")
+                                        .setPositiveButton("sim",
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        sairDoEvento();
+                                                        Toast.makeText(mcontext,"Você saiu do evento "+nomeEvento,Toast.LENGTH_LONG).show();
+                                                    }
+                                                })
+                                        .setNegativeButton("não", null)
+                                        .show();
+                                break;
                         }
                     }
                 });
@@ -206,8 +248,50 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             return true;
         }
 
+        // metodo disparado para sair de um evento
         private void sairDoEvento() {
-            Toast.makeText(mcontext,"Saiu do Evento",Toast.LENGTH_LONG).show();
+            // aqui o usuario esta sendo removido da lista de participantes e tambem o evendo esta sendo removido de sua lista
+            FirebaseDatabase.getInstance().getReference().child("eventos")
+                    .child(listaEventos.get(getAdapterPosition()).getIdEvento())
+                    .child("participantes")
+                    .orderByChild("email")
+                    .equalTo(tinyDB.getObject("dadosUsuario", Usuario.class).getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot child : dataSnapshot.getChildren()){
+                            child.getRef().removeValue();
+                        }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            // aqui o evento esta sendo removido da lista de eventos do usuario
+            FirebaseDatabase.getInstance().getReference().child("usuarios")
+                    .child(tinyDB.getObject("dadosUsuario", Usuario.class).getId())
+                    .child("eventosAssociados")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot child : dataSnapshot.getChildren()){
+                        String idEvento = child.getValue(String.class);// recupera id do evento
+                       if(listaEventos.get(getAdapterPosition()).getIdEvento().equals(idEvento)){
+                           child.getRef().removeValue();
+                       }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            if(getItemCount() <= 1){
+                recyclerViewOnClickListenerHack.onClickListener(null, 0,true);
+            }
         }
 
         private void verParticipantes() {
@@ -221,15 +305,58 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
         }
 
         private void editarEvento() {
+            // flag necessaria para definir que o evento sera editado
+            tinyDB.putBoolean("flagDeEdicao",true);
+            // evento que sera editado
+            tinyDB.putObject("eventoEdit",listaEventos.get(getAdapterPosition()));
+
             Toast.makeText(mcontext,"Abrir Edição do Evento",Toast.LENGTH_LONG).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
+            builder.setTitle("Escolha uma opção que deseja editar");
+            String[] animals = {"Detalhes do evento", "Local do evento", "Imagem do evento"};
+            builder.setItems(animals, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            editDetalhesEvento();
+                            break;
+                        case 1:
+                            editLocalEvento();
+                            break;
+                        case 2:
+                            editImagem();
+                            break;
+                    }
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
         private void verDetalhes(View v) {
             if (recyclerViewOnClickListenerHack != null) {
-                recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition());
+                recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition(),false);
             }
         }
     }
+
+    // funçoes de edição do evento
+    private void editDetalhesEvento() {
+        Intent it = new Intent(mcontext, CriarEventoActivity.class);
+        mcontext.startActivity(it);
+    }
+
+    private void editLocalEvento() {
+        Intent it = new Intent(mcontext, LocalMapaActivity.class);
+        mcontext.startActivity(it);
+    }
+    // funções de edição do  evento
+    private void editImagem() {
+        Intent it = new Intent(mcontext, ImagemEventoActivity.class);
+        mcontext.startActivity(it);
+    }
+
 
 
 }

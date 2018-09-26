@@ -81,14 +81,18 @@ public class MenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         //associa layou a variaveis slidingTabLayout e viewPager
+        associaDadosFirebase();
         associa();
         setSupportActionBar(toolbar);
-
+        //pega dados do usuario logado no sistema
         //permissão de gps
         checkLocationPermission();
-
+        if(tinyDB.getBoolean("flagDeEdicao")){
+            tinyDB.remove("flagDeEdicao");
+        }
 
         // Vamos instanciar o GoogleApiClient, caso seja nulo
+        // necessario para pegar localização do dispositivo
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this) // Interface ConnectionCallbacks
@@ -106,6 +110,7 @@ public class MenuActivity extends AppCompatActivity
         TabAdapter tabAdapter = new TabAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabAdapter);
         slidingTabLayout.setViewPager(viewPager);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +135,6 @@ public class MenuActivity extends AppCompatActivity
         nomePerfil = (TextView) hView.findViewById(R.id.id_nome_perfil);
         emailPerfil = (TextView) hView.findViewById(R.id.id_email_perfil);
 
-        associaDadosFirebase();
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -182,6 +186,7 @@ public class MenuActivity extends AppCompatActivity
                         if (user.getEmail().equals(usuario.getEmail())) {
                             // salva os dados do usuario para ser usado futuramente
                             tinyDB.putObject("dadosUsuario", usuario);
+                            System.out.println("Usuario: "+usuario.getEmail());
                             // popula o menu lateral com informaçoes do usuario
                             Picasso.get().load(usuario.getUrlImagem()).into(imgPerfil);
                             nomePerfil.setText(usuario.getNome());
@@ -266,7 +271,6 @@ public class MenuActivity extends AppCompatActivity
 
             FirebaseAuth auth = ConfiguraFirebase.getAutenticacao();
             auth.signOut();
-
             Intent it = new Intent(MenuActivity.this, MainActivity.class);
 
             startActivity(it);

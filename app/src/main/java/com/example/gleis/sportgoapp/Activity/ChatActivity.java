@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -51,6 +53,8 @@ public class ChatActivity extends AppCompatActivity {
     private ChatMessage message;
     private ArrayList<ChatMessage> arraymessages = new ArrayList<>();
     private ChatAdapter adapter;
+    private Toolbar toolbar;
+
 
 
     @Override
@@ -58,10 +62,14 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         intiViews();
-
+        setSupportActionBar(toolbar);
         // pega os dados do usuario logado
         usuariologado = tinyDB.getObject("dadosUsuario",Usuario.class);
         evento = tinyDB.getObject("evento",Evento.class);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(evento.getTituloEvento());
+
 
         System.out.println("evento :"+ evento.getTituloEvento());
 
@@ -98,6 +106,20 @@ public class ChatActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
+        switch (item.getItemId()) {
+            case android.R.id.home:  //ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
+                Intent it = new Intent(ChatActivity.this,MenuActivity.class);
+                startActivity(it);
+                finish();//Método para matar a activity e não deixa-lá indexada na pilhagem
+                break;
+            default:break;
+        }
+        return true;
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -189,6 +211,9 @@ public class ChatActivity extends AppCompatActivity {
         llm.setReverseLayout(false);
         llm.setStackFromEnd(true);// setando layout no fragment
         rChat.setLayoutManager(llm);
+
+        // tolbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
         editMessage = (EditText) findViewById(R.id.input);

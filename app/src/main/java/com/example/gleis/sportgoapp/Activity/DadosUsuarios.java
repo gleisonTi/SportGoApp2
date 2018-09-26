@@ -40,8 +40,6 @@ public class DadosUsuarios extends AppCompatActivity {
         Picasso.get().load(usuario.getUrlImagem()).into(img_perfil);
         tv_email.setText(usuario.getEmail());
         tv_esporte.setText(usuario.getEsporte());
-        tv_cidade.setText(usuario.getCidade());
-        tv_estado.setText(usuario.getEstado());
 
         fb_editar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +72,6 @@ public class DadosUsuarios extends AppCompatActivity {
         img_perfil = (ImageView) findViewById(R.id.img_perfil_usuario);
         tv_email = (TextView) findViewById(R.id.tv_email_usuario);
         tv_esporte = (TextView) findViewById(R.id.tv_esporte_usuario);
-        tv_cidade = (TextView) findViewById(R.id.tv_cidade_usuario);
-        tv_estado = (TextView) findViewById(R.id.tv_estado_usuario);
         fb_editar =(FloatingActionButton) findViewById(R.id.fb_editar);
 
     }

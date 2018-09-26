@@ -166,6 +166,7 @@ public class EventoActivity extends AppCompatActivity {
 
     // incluindo participante em evento
     private void participar() {
+
         FirebaseDatabase.getInstance() // aqui esta sendo usada a classe direta do firabase
                 .getReference()
                 .child("eventos")
@@ -220,6 +221,13 @@ public class EventoActivity extends AppCompatActivity {
             default:break;
         }
         return true;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent it = new Intent(EventoActivity.this,MenuActivity.class);
+        startActivity(it);
+        finish();
     }
 
     @Override

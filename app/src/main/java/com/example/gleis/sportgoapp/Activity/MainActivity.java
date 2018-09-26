@@ -17,7 +17,9 @@ import android.widget.Toast;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.R;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -42,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         associacao();
+        usuarioLogado();
 
         progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setCanceledOnTouchOutside(false);
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,19 +57,25 @@ public class MainActivity extends AppCompatActivity {
                     progressDialog.setMessage("Buscando Usuario...");
                     progressDialog.show();
                     if(!edtEmail.getText().toString().equals("")  && !edtSenha.getText().toString().equals("")){
+                        if(validateEmailFormat(edtEmail.getText().toString())){
+                            String email = edtEmail.getText().toString();
+                            String senha = edtSenha.getText().toString();
 
-                        String email = edtEmail.getText().toString();
-                        String senha = edtSenha.getText().toString();
+                            validacao(email,senha);
+                        }else{
+                            alert("Email digitado não e valido");
+                            progressDialog.dismiss();
+                        }
 
-                        validacao(email,senha);
                     }else{
                         alert("Preencha os campos de email e senha");
+                        progressDialog.dismiss();
                     }
                 }
                 else {
                     alert("Não há conexão com a internet");
+                    progressDialog.dismiss();
                 }
-
 
 
             }
@@ -81,15 +91,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean validateEmailFormat(final String email) {
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return true;
+        }
+        return false;
+    }
+
     private void usuarioLogado() {
         // testa se o usuario esta logado
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+        autenticacao = ConfiguraFirebase.getAutenticacao();
+        if( autenticacao.getCurrentUser() != null) {
             Toast.makeText(this,
                     "Welcome " + FirebaseAuth.getInstance()
                             .getCurrentUser().getEmail(),
                     Toast.LENGTH_LONG)
                     .show();
-            Intent it = new Intent(MainActivity.this,MainActivity.class);
+            Intent it = new Intent(MainActivity.this,MenuActivity.class);
             startActivity(it);
         }
     }
@@ -106,14 +124,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
-                    alert("Login efetuado com sucesso");
 
+                    alert("Login efetuado com sucesso");
                     abrirTelaMenu();
 
                 }else{
-                    alert("ERRO ao efetuar login");
+
+                    alert("Usuário não encontrado");
                     progressDialog.dismiss();
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG);
+                progressDialog.dismiss();
+
             }
         });
 

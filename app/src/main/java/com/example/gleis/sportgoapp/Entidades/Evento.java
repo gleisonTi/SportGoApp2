@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.Timer;
 
 /**
@@ -84,6 +85,12 @@ public class Evento implements Parcelable {
 
         DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
         referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).setValue(this);
+    }
+
+    public void atualizaFirebaseEvento(Map<String, Object> taskMap){
+
+        DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
+        referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).updateChildren(taskMap); // metodo que atualiza os dados
     }
 
     public String getIdEvento() {
@@ -228,4 +235,6 @@ public class Evento implements Parcelable {
                 ", UsuarioCriador=" + UsuarioCriador +
                 '}';
     }
+
+
 }

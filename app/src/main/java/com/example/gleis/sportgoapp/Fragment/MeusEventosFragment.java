@@ -13,9 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.gleis.sportgoapp.Activity.EventoActivity;
-import com.example.gleis.sportgoapp.Adapter.EventosAdapter;
 import com.example.gleis.sportgoapp.Adapter.MeusEventosAdapter;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
@@ -34,14 +34,18 @@ import java.util.List;
 public class MeusEventosFragment extends Fragment implements RecyclerViewOnClickListenerHack {
 
     private RecyclerView recyclerViewEventos;
-
+    private LinearLayout lnSemEvento;
+    private LinearLayout lncarregando;
     private MeusEventosAdapter adapter;
 
     private List<Evento> listaEvento;
     private TinyDB tinyDB;
     private DatabaseReference referenceFirebase;
     private Evento todosEventos;
+    private Usuario usuarioLogado;
+    private View view;
 
+    private boolean flag;
 
     public MeusEventosFragment() {
         // Required empty public constructor
@@ -50,15 +54,21 @@ public class MeusEventosFragment extends Fragment implements RecyclerViewOnClick
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sem_conexao, container, false);
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_sem_conexao, container, false);
         if(isOnline()){
+            // flag de exibição de eventos cadastrados
+            flag = true;
             // pegar dados do Usuario logado
             tinyDB = new TinyDB(getContext());
             // inflar o layout para este fragmento
             view = inflater.inflate(R.layout.fragment_participando, container, false);
             // criar um view quando o usuario não estiver participando de nehum evento
             recyclerViewEventos = (RecyclerView) view.findViewById(R.id.id_recycler_view_participando);
+            // criando o layout se não hover evento
+            lnSemEvento = (LinearLayout) view.findViewById(R.id.id_semEvento);
+            lncarregando = (LinearLayout) view.findViewById(R.id.id_carregando);
+            lncarregando.setVisibility(View.GONE);
             //metodo para carregar dados no final da lista !!! metodo antigo
             recyclerViewEventos.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -72,6 +82,7 @@ public class MeusEventosFragment extends Fragment implements RecyclerViewOnClick
                 }
             });
 
+
             // otimizar recyclerview não mudar o tamanho.
             recyclerViewEventos.setHasFixedSize(true);
             //criando layout para o fragment
@@ -84,29 +95,36 @@ public class MeusEventosFragment extends Fragment implements RecyclerViewOnClick
             listaEvento =  new ArrayList<>();
 
             referenceFirebase = ConfiguraFirebase.getFirebase();
+            usuarioLogado = tinyDB.getObject("dadosUsuario", Usuario.class);
 
             // pegar referencia do usuario depois dos eventos que ele paricipa
             referenceFirebase.child("usuarios")
-                    .child(tinyDB.getObject("dadosUsuario", Usuario.class).getId()) // id do Usuario no firebase
+                    .child(usuarioLogado.getId()) // id do Usuario no firebase
                     .child("eventosAssociados").addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) { // no com os ids dos eventos em que o usuario participa
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    listaEvento.clear();      // no com os ids dos eventos em que o usuario participa
                     for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                         // pega ids dos eventos  em que o cliente participa
                         String idEvento = postSnapshot.getValue(String.class);
-                        System.out.println("idEvento: "+idEvento);
                         // recupera eventos dos usuarios
                         referenceFirebase.child("eventos").child(idEvento).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
+                                // no com os ids dos eventos em que o usuario participa
+                                todosEventos = dataSnapshot.getValue(Evento.class);
+                                listaEvento.add(todosEventos);
 
-                                    todosEventos = dataSnapshot.getValue(Evento.class);
+                                Boolean flag = false;
+                                for(Evento evento: listaEvento){
+                                  //  System.out.println("Evento"+evento.getTituloEvento());
+                                    lnSemEvento.setVisibility(view.GONE);
+                                }
 
-                                    listaEvento.add(todosEventos);
 
                                 adapter.notifyDataSetChanged();
-                            }
 
+                            }
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
 
@@ -122,29 +140,12 @@ public class MeusEventosFragment extends Fragment implements RecyclerViewOnClick
                 }
             });
 
-            /*referenceFirebase.child("eventos").orderByChild("idEvento").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-
-                        todosEventos = postSnapshot.getValue(Evento.class);
-
-                        listaEvento.add(todosEventos);
-
-                    }
-                    adapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });*/
             adapter = new MeusEventosAdapter(listaEvento,getActivity());
+
             adapter.setRecyclerViewOnClickListenerHack(this);
             // adapter
             recyclerViewEventos.setAdapter(adapter);
+
             return  view;
         }
 
@@ -152,10 +153,17 @@ public class MeusEventosFragment extends Fragment implements RecyclerViewOnClick
     }
 
     @Override
-    public void onClickListener(View view, int position) {
-        Intent it = new Intent(getActivity(), EventoActivity.class);
-        it.putExtra("evento",listaEvento.get(position));
-        startActivity(it);
+    public void onClickListener(View view, int position, boolean b) {
+        if(view != null){
+            Intent it = new Intent(getActivity(), EventoActivity.class);
+            it.putExtra("evento",listaEvento.get(position));
+            startActivity(it);
+        }
+        // se a varriavel receber true a lista esta vasia e deve ser mostrado do layout de lista vasia
+        if(b){
+            lnSemEvento.setVisibility(view.VISIBLE);
+        }
+
     }
 
     public boolean isOnline() {

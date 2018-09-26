@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,11 +41,12 @@ public class LocalMapaActivity extends AppCompatActivity {
     private ImageView btnLocal;
     private Button btnProximo;
     private Button btnVoltar;
-    private Double lat;
+    private Double  lat;
     private Double lng;
     private String endereco;
     private TinyDB tinyDB;
     private Evento evento;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,10 @@ public class LocalMapaActivity extends AppCompatActivity {
         btnLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog = new ProgressDialog(LocalMapaActivity.this);
+                progressDialog.setMessage("Buscando Local");
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.show();
                 buscarLatLngEndereco(adress.getText().toString().replace(" ", "+"));
                 // new Getcordenadas().execute(adress.getText().toString().replace(" ","+"));
             }
@@ -101,13 +107,18 @@ public class LocalMapaActivity extends AppCompatActivity {
             List<Address> enderecos = geocoder.getFromLocationName(endereco, 1);
             if (enderecos.size() > 0) {
 
-                this.lat = enderecos.get(0).getLatitude();
-                this.lng = enderecos.get(0).getLongitude();
+                lat = enderecos.get(0).getLatitude();
+                lng = enderecos.get(0).getLongitude();
                 Log.d("teste", "lat :" + lat + " lng " + lng);
                 buscarEnderecoLatLng(lat, lng);
+            }else{
+
+                    progressDialog.dismiss();
+                    alert("Local não encotrado");
+
             }
         } catch (IOException e) {
-
+            progressDialog.dismiss();
         }
     }
 
@@ -118,12 +129,17 @@ public class LocalMapaActivity extends AppCompatActivity {
             List<Address> enderecos = geocoder.getFromLocation(lat, lng, 1);
             if (enderecos.size() > 0) {
 
-                this.endereco = enderecos.get(0).getAddressLine(0);
+                endereco = enderecos.get(0).getAddressLine(0);
                 Log.d("teste", "endereco : " + endereco);
 
                 alert(endereco);
+                this.lat = lat;
+                this.lng = lng;
                 pesquisaLatLong(lat, lng, endereco);
 
+            }else{
+                progressDialog.dismiss();
+                alert("Local não localizado");
             }
         } catch (IOException e) {
 
@@ -142,14 +158,13 @@ public class LocalMapaActivity extends AppCompatActivity {
     }
 
     private void pesquisaLatLong(final Double lat, final Double lng, final String endereco) {
-
+        progressDialog.dismiss();
         mapa.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
 
                 LatLng franca = new LatLng(lat, lng);
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
 
                 googleMap.addMarker(new MarkerOptions().position(franca).title(endereco).draggable(true));
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(franca, 15));
@@ -190,11 +205,6 @@ public class LocalMapaActivity extends AppCompatActivity {
         Toast.makeText(this, texto, Toast.LENGTH_SHORT).show();
     }
 
-    private void passaLatLng(Double latdrag, Double lngdrag) {
-        lat = latdrag;
-        lng = lngdrag;
-
-    }
 
     @Override
     protected void onStart() {

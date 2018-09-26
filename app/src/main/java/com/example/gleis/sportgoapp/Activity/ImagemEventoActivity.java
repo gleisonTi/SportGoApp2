@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -208,7 +209,7 @@ public class ImagemEventoActivity extends AppCompatActivity {
                         evento.setUsuarioCriador(usuario);
                         evento.salvarFirebaseEvento();
 
-                        System.out.println(evento.toString());
+                        participar();
 
                     } else {
                         Toast.makeText(getApplicationContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -226,6 +227,19 @@ public class ImagemEventoActivity extends AppCompatActivity {
             prdUpload.dismiss();
             alert("E necessario a escolha de uma imagem para o evento");
         }
+    }
+
+    private void participar() {
+        FirebaseDatabase.getInstance() // aqui esta sendo usada a classe direta do firabase
+                .getReference()
+                .child("eventos")
+                .child(evento.getIdEvento()).child("participantes").push().setValue(tinyDB.getObject("dadosUsuario", Usuario.class));
+
+        // associando evento ao usuario
+        FirebaseDatabase.getInstance() // aqui esta sendo usada a classe direta do firabase
+                .getReference()
+                .child("usuarios")
+                .child(usuario.getId()).child("eventosAssociados").push().setValue(evento.getIdEvento());
     }
 
     private void alert(String s) {
