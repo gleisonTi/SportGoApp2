@@ -11,7 +11,6 @@
     app:cardUseCompatPadding="false"
     app:cardPreventCornerOverlap="false"
     app:cardCornerRadius="8dp"
-
     >
 
     <LinearLayout

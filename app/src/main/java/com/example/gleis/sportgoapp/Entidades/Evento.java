@@ -28,6 +28,7 @@ public class Evento implements Parcelable {
     private Double enderecolng;
     private String endereco;
     private String imagemEvento;
+    private Status statusEvento;
     private Usuario UsuarioCriador;
 
     public Usuario getUsuarioCriador() {
@@ -40,6 +41,14 @@ public class Evento implements Parcelable {
 
     public Evento() {
 
+    }
+
+    public Status getStatusEvento() {
+        return statusEvento;
+    }
+
+    public void setStatusEvento(Status statusEvento) {
+        this.statusEvento = statusEvento;
     }
 
     // contrutor para utilizar o parcelable para passar os dados para outra actyvity
@@ -81,16 +90,24 @@ public class Evento implements Parcelable {
         }
     };
 
+    // funcao responsavel por Salvar um novo evento no firebase
     public  void salvarFirebaseEvento(){
 
         DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
         referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).setValue(this);
     }
 
+    // funcao responsavel por atualizar os dados no firebase
     public void atualizaFirebaseEvento(Map<String, Object> taskMap){
 
         DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
         referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).updateChildren(taskMap); // metodo que atualiza os dados
+    }
+    // metodo responsavel por cancelar o evento
+    public void cancelaFirebaseEvento(Map<String, Object> taskMap){
+
+        DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
+        referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).child("statusEvento").updateChildren(taskMap); // metodo que atualiza os dados
     }
 
     public String getIdEvento() {

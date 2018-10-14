@@ -1,6 +1,8 @@
 package com.example.gleis.sportgoapp.Activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,8 +33,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LocalMapaActivity extends AppCompatActivity {
 
@@ -41,11 +45,12 @@ public class LocalMapaActivity extends AppCompatActivity {
     private ImageView btnLocal;
     private Button btnProximo;
     private Button btnVoltar;
-    private Double  lat;
+    private Double lat;
     private Double lng;
     private String endereco;
     private TinyDB tinyDB;
     private Evento evento;
+    private Evento eventoEdit;
     private ProgressDialog progressDialog;
 
     @Override
@@ -53,17 +58,34 @@ public class LocalMapaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_mapa);
         associaVariaveis();
+
         mapa.onCreate(savedInstanceState);
 
+        progressDialog = new ProgressDialog(LocalMapaActivity.this);
+        progressDialog.setMessage("Buscando Local");
+        progressDialog.setCanceledOnTouchOutside(false);
         // pega objeto evento salvo na memoria
-        evento = tinyDB.getObject("evento",Evento.class);
+        evento = tinyDB.getObject("evento", Evento.class);
+
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            btnProximo.setText("Salvar Alterações");
+            btnVoltar.setVisibility(View.GONE);
+            eventoEdit = tinyDB.getObject("eventoEdit", Evento.class);
+
+            lat = eventoEdit.getEnderecolat();
+            lng = eventoEdit.getEnderecolng();
+            endereco = eventoEdit.getEndereco();
+
+            pesquisaLatLong(lat,lng,null);
+
+        } else {
+            btnProximo.setText("Proximo");
+            btnVoltar.setVisibility(View.VISIBLE);
+        }
 
         btnLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = new ProgressDialog(LocalMapaActivity.this);
-                progressDialog.setMessage("Buscando Local");
-                progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.show();
                 buscarLatLngEndereco(adress.getText().toString().replace(" ", "+"));
                 // new Getcordenadas().execute(adress.getText().toString().replace(" ","+"));
@@ -78,19 +100,61 @@ public class LocalMapaActivity extends AppCompatActivity {
                 evento.setEnderecolat(lat);
                 evento.setEnderecolng(lng);
                 evento.setEndereco(endereco);
-                //salva novamente os dados na memoria
-                tinyDB.putObject("evento",evento);
-                // devera ser criado condição para avançar
 
-                Intent it = new Intent(LocalMapaActivity.this, ImagemEventoActivity.class);
-                startActivity(it);
-                finish();
+                if (tinyDB.getBoolean("flagDeEdicao")) {
+
+                    new AlertDialog.Builder(LocalMapaActivity.this)
+                            .setTitle("Edição de Evento")
+                            .setMessage("deseja editar o evento " + eventoEdit.getTituloEvento() + "?")
+                            .setPositiveButton("sim",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                               /* eventoEdit.setTituloEvento(tituloEvento.getText().toString());
+                                                eventoEdit.setTipoEvento(tipoEvento.getText().toString());
+                                                eventoEdit.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
+                                                eventoEdit.setDescricaoEvento(descricaoEvento.getText().toString());
+                                                eventoEdit.setDataEvento(tvData.getText().toString());
+                                                eventoEdit.setHoraEvento(tvHora.getText().toString());*/
+
+                                            // objeto utilizado atualizar os dados
+                                            Map<String, Object> taskMap = new HashMap<String, Object>();
+                                            // add hash map nesse formato
+
+                                            //salva ediçoes do lat lng
+                                            taskMap.put("enderecolat", lat);
+                                            taskMap.put("enderecolng",lng);
+                                            taskMap.put("endereco",endereco);
+
+                                            eventoEdit.atualizaFirebaseEvento(taskMap);
+                                            alert("Foram salvas alterações no evento " + eventoEdit.getTituloEvento());
+                                            tinyDB.remove("flagDeEdicao");
+                                            Intent it = new Intent(LocalMapaActivity.this, MenuActivity.class);
+                                            startActivity(it);
+
+                                            finish();
+                                        }
+                                    })
+                            .setNegativeButton("não", null)
+                            .show();
+
+                } else {
+                    //salva novamente os dados na memoria
+                    tinyDB.putObject("evento", evento);
+                    // devera ser criado condição para avançar
+
+                    Intent it = new Intent(LocalMapaActivity.this, ImagemEventoActivity.class);
+                    startActivity(it);
+                    finish();
+
+                }
 
             }
         });
         btnVoltar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tinyDB.remove("flagDeEdicao");
                 Intent itVoltar = new Intent(LocalMapaActivity.this, CriarEventoActivity.class);
                 startActivity(itVoltar);
                 finish();
@@ -111,10 +175,10 @@ public class LocalMapaActivity extends AppCompatActivity {
                 lng = enderecos.get(0).getLongitude();
                 Log.d("teste", "lat :" + lat + " lng " + lng);
                 buscarEnderecoLatLng(lat, lng);
-            }else{
+            } else {
 
-                    progressDialog.dismiss();
-                    alert("Local não encotrado");
+                progressDialog.dismiss();
+                alert("Local não encotrado");
 
             }
         } catch (IOException e) {
@@ -137,7 +201,7 @@ public class LocalMapaActivity extends AppCompatActivity {
                 this.lng = lng;
                 pesquisaLatLong(lat, lng, endereco);
 
-            }else{
+            } else {
                 progressDialog.dismiss();
                 alert("Local não localizado");
             }
@@ -158,7 +222,9 @@ public class LocalMapaActivity extends AppCompatActivity {
     }
 
     private void pesquisaLatLong(final Double lat, final Double lng, final String endereco) {
-        progressDialog.dismiss();
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
         mapa.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -230,4 +296,14 @@ public class LocalMapaActivity extends AppCompatActivity {
         mapa.onPause();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            Intent it = new Intent(LocalMapaActivity.this, MenuActivity.class);
+            startActivity(it);
+        }
+        tinyDB.remove("flagDeEdicao");
+    }
 }

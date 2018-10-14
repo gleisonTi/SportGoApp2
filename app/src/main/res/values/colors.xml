@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#316955</color>
     <color name="colorAccent">#ff5f5f</color>
     <color name="color_btn">#ff5f5f</color>
+    <color name="balonStatus">#c3efcbcb</color>
+    <color name="TextStatus">#e25454</color>
     <color name="edit_text_color">#ffffff</color>
 
     <color name="colorPrimaryText">#1d1d1d</color>

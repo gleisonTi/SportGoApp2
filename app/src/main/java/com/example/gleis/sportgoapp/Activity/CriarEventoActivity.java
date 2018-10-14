@@ -116,19 +116,21 @@ public class CriarEventoActivity extends AppCompatActivity {
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                               /* eventoEdit.setTituloEvento(tituloEvento.getText().toString());
-                                                eventoEdit.setTipoEvento(tipoEvento.getText().toString());
-                                                eventoEdit.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
-                                                eventoEdit.setDescricaoEvento(descricaoEvento.getText().toString());
-                                                eventoEdit.setDataEvento(tvData.getText().toString());
-                                                eventoEdit.setHoraEvento(tvHora.getText().toString());*/
-
+                                               // objeto utilizado atualizar os dados
                                                 Map<String,Object> taskMap = new HashMap<String,Object>();
                                                 // add hash map nesse formato
                                                 taskMap.put("tipoEvento",tipoEvento.getText().toString());
+                                                taskMap.put("tituloEvento",tituloEvento.getText().toString());
+                                                taskMap.put("qtdParticipante",Integer.parseInt(qtdParticipante.getText().toString()));
+                                                taskMap.put("horaEvento",tvHora.getText().toString());
+                                                taskMap.put("DescricaoEvento",descricaoEvento.getText().toString());
+                                                taskMap.put("dataEvento",tvData.getText().toString());
                                                 //salva edições do evento
                                                 eventoEdit.atualizaFirebaseEvento(taskMap);
                                                 alert("Foram salvas alterações no evento "+eventoEdit.getTituloEvento());
+                                                tinyDB.remove("flagDeEdicao");
+                                                Intent it = new Intent(CriarEventoActivity.this, MenuActivity.class);
+                                                startActivity(it);
                                                 finish();
                                             }
                                         })
@@ -230,6 +232,11 @@ public class CriarEventoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            Intent it = new Intent(CriarEventoActivity.this, MenuActivity.class);
+            startActivity(it);
+        }
         tinyDB.remove("flagDeEdicao");
         finish();
     }

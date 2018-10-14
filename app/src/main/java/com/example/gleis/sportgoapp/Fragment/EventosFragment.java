@@ -5,19 +5,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.gleis.sportgoapp.Activity.EventoActivity;
 import com.example.gleis.sportgoapp.Adapter.EventosAdapter;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Interfaces.RecyclerViewOnClickListenerHack;
+import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,8 +37,10 @@ import java.util.List;
 public class EventosFragment extends Fragment implements RecyclerViewOnClickListenerHack {
 
     private RecyclerView recyclerViewEventos;
-
+    private LinearLayout lnSemEvento;
+    private LinearLayout lncarregando;
     private EventosAdapter adapter;
+    private TinyDB tinyDB;
 
     private List<Evento> listaEvento;
 
@@ -69,7 +76,11 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
                 }
             });
 
+            lnSemEvento = (LinearLayout) view.findViewById(R.id.id_semEvento);
+            lncarregando = (LinearLayout) view.findViewById(R.id.id_carregando);
+            tinyDB = new TinyDB(getContext());
 
+            lnSemEvento.setVisibility(View.GONE);
 
             // otimizar recyclerview não mudar o tamanho.
             recyclerViewEventos.setHasFixedSize(true);
@@ -84,25 +95,67 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
 
             referenceFirebase = ConfiguraFirebase.getFirebase();
 
-            referenceFirebase.child("eventos").orderByChild("idEvento").addValueEventListener(new ValueEventListener() {
+            referenceFirebase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-
-                        todosEventos = postSnapshot.getValue(Evento.class);
-
-                        listaEvento.add(todosEventos);
-
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.hasChild("eventos")) {// primeiro testa se a eventos no banco
+                        lncarregando.setVisibility(View.GONE);
+                        lnSemEvento.setVisibility(View.VISIBLE);
                     }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            referenceFirebase.child("eventos").orderByChild("idEvento").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+                    if (dataSnapshot.exists()) {
+                        lncarregando.setVisibility(View.GONE);
+                        todosEventos = dataSnapshot.getValue(Evento.class);
+
+                        if (todosEventos.getStatusEvento().getTipo().equals("Ativo")) {
+                            listaEvento.add(todosEventos);
+                            lnSemEvento.setVisibility(View.GONE);
+                        }
+                        if (listaEvento.isEmpty()) {
+                            lnSemEvento.setVisibility(View.VISIBLE);
+                            lncarregando.setVisibility(View.GONE);
+                        }
+                    }else{
+                        lnSemEvento.setVisibility(View.VISIBLE);
+                        lncarregando.setVisibility(View.GONE);
+                    }
+
                     adapter.notifyDataSetChanged();
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
+
 
             adapter = new EventosAdapter(listaEvento,getActivity());
             adapter.setRecyclerViewOnClickListenerHack(this);
@@ -121,12 +174,16 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
         adapter.notifyDataSetChanged();
     }
 
+
     @Override
     public void onClickListener(View view, int position, boolean b) {
         Intent it = new Intent(getActivity(), EventoActivity.class);
-        it.putExtra("evento",listaEvento.get(position));
+        tinyDB.putObject("evento",listaEvento.get(position));
         getActivity().finish();
         startActivity(it);
+        if(b){
+            lnSemEvento.setVisibility(view.VISIBLE);
+        }
     }
 
     public boolean isOnline() {

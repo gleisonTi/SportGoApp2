@@ -7,6 +7,8 @@
     android:background="@drawable/fundoimagem"
     tools:context=".Activity.ChatActivity">
 
+
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
@@ -34,7 +36,54 @@
         android:paddingTop="8dp"
        >
 
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/id_status_balao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/balonStatus"
+            android:background="@drawable/message_status"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Este evento foi cancelado pelo seu criador pelo motivo:"
+                android:textStyle="bold"
+                android:textColor="@color/TextStatus"
+                android:textAlignment="center"
+            />
+            <TextView
+                android:id="@+id/id_menssagem_status"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Não poderei participar"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Os participantes ainda podem se comunicar neste evento"
+                android:textStyle="bold"
+                android:textColor="@color/TextStatus"
+                android:textAlignment="center"
+                />
+        </LinearLayout>
+
+
         <android.support.v7.widget.RecyclerView
+            android:layout_below="@+id/id_status_balao"
             android:id="@+id/list_of_messages"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.gleis.sportgoapp.Adapter.ChatAdapter;
 import com.example.gleis.sportgoapp.Adapter.ChatHolder;
@@ -44,6 +46,8 @@ import javax.security.auth.callback.CallbackHandler;
 public class ChatActivity extends AppCompatActivity {
 
     private EditText editMessage;
+    private TextView statusMessage;
+    private LinearLayout statusBalao;
     private FloatingActionButton fbSendMessage;
     // instancia do banco de dados
     private TinyDB tinyDB;
@@ -69,7 +73,14 @@ public class ChatActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(evento.getTituloEvento());
+        getSupportActionBar().setSubtitle(evento.getTipoEvento()+" "+evento.getHoraEvento());
 
+        System.out.println(evento.getStatusEvento().toString());
+
+        /*if (evento.getStatusEvento().getTipo().equals("Cancelado")) {
+            statusBalao.setVisibility(View.VISIBLE);
+            statusMessage.setText("\""+evento.getStatusEvento().getMotivoDescricao()+"\"");
+        }*/
 
         System.out.println("evento :"+ evento.getTituloEvento());
 
@@ -217,6 +228,8 @@ public class ChatActivity extends AppCompatActivity {
 
 
         editMessage = (EditText) findViewById(R.id.input);
+        statusMessage = (TextView) findViewById(R.id.id_menssagem_status);
+        statusBalao = (LinearLayout) findViewById(R.id.id_status_balao);
         fbSendMessage = (FloatingActionButton) findViewById(R.id.fabSend);
         tinyDB = new TinyDB(this);
     }

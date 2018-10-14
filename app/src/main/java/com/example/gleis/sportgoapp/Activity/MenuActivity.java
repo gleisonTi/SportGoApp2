@@ -272,8 +272,8 @@ public class MenuActivity extends AppCompatActivity
             FirebaseAuth auth = ConfiguraFirebase.getAutenticacao();
             auth.signOut();
             Intent it = new Intent(MenuActivity.this, MainActivity.class);
-
             startActivity(it);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

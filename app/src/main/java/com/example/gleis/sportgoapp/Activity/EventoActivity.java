@@ -64,17 +64,9 @@ public class EventoActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         // pega usuario logado
         usuario = tinyDB.getObject("dadosUsuario", Usuario.class);
-        if(savedInstanceState != null){
-            evento = savedInstanceState.getParcelable("evento");
-        }
-        else{
-            if(getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("evento") != null){
-                evento = getIntent().getExtras().getParcelable("evento");
-            }
-            else{
-                alert("Fallhou !!");
-            }
-        }
+        evento = tinyDB.getObject("evento",Evento.class);
+
+        System.out.println(evento);
         // pega lista de usuario participantes
         listaParticipantes();
         //pegar tamanho da tela para width e height

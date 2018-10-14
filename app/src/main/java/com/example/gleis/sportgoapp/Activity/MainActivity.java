@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         associacao();
         usuarioLogado();
 
+
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setCanceledOnTouchOutside(false);
         btnEntrar.setOnClickListener(new View.OnClickListener() {
@@ -102,13 +103,11 @@ public class MainActivity extends AppCompatActivity {
         // testa se o usuario esta logado
         autenticacao = ConfiguraFirebase.getAutenticacao();
         if( autenticacao.getCurrentUser() != null) {
-            Toast.makeText(this,
-                    "Welcome " + FirebaseAuth.getInstance()
-                            .getCurrentUser().getEmail(),
-                    Toast.LENGTH_LONG)
-                    .show();
+
             Intent it = new Intent(MainActivity.this,MenuActivity.class);
             startActivity(it);
+            finish();
+
         }
     }
 
@@ -151,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent it = new Intent(MainActivity.this, MenuActivity.class);
         startActivity(it);
+        finish();
     }
 
     private void associacao() {

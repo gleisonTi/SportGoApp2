@@ -72,9 +72,16 @@ public class MapaFragment extends Fragment {
         mapView.onCreate(savedInstanceState);
         if(isOnline()){
 
-            listaEventosMapa();
+            latLngRegiao = tinyDB.getObject("latlngAtual",LatLng.class);
+            System.out.println("lat do usuario"+ latLngRegiao.latitude+latLngRegiao.longitude);
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngRegiao,12));
+                }
+            });
 
-            associaDadosFirebase();
+            listaEventosMapa();
             // Inflate the layout for this fragment
         }
 
@@ -92,16 +99,16 @@ public class MapaFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
             // Listando os eventos nos mapa a partir do Firebasedatabase
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    if (dataSnapshot.exists()) {
+                        todosEventos = postSnapshot.getValue(Evento.class);
+                        if (todosEventos.getStatusEvento().getTipo().equals("Ativo")) {
+                            Double lat = todosEventos.getEnderecolat();
+                            Double lng = todosEventos.getEnderecolng();
+                            String titulo = todosEventos.getTituloEvento();
+                            mostrarNoMapa(lat,lng,titulo);
+                        }
 
-                    todosEventos = postSnapshot.getValue(Evento.class);
-
-                    Double lat = todosEventos.getEnderecolat();
-                    Double lng = todosEventos.getEnderecolng();
-                    String titulo = todosEventos.getTituloEvento();
-
-                    mostrarNoMapa(lat,lng,titulo);
-
-                    listaEvento.add(todosEventos);
+                    }
 
                 }
             }
@@ -127,7 +134,7 @@ public class MapaFragment extends Fragment {
     private void associaDadosFirebase() {
 
         // pega localização do dispositivo para iniciar o mapa
-        latLngRegiao = tinyDB.getObject("latlngAtual",LatLng.class);
+
 
         // pega dados a partir da cidade do usuario
         /*usuariodados = ConfiguraFirebase.getFirebase();
@@ -163,6 +170,7 @@ public class MapaFragment extends Fragment {
 
     private void mostrarNoMapa(final Double lat, final Double lng, final String tituloEvento) {
 
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -172,6 +180,7 @@ public class MapaFragment extends Fragment {
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 // marcando locais dos eventos
                 MarkerOptions marker = new MarkerOptions();
+
                 marker.position(latLng);
                 marker.title(tituloEvento);
                 googleMap.addMarker(marker);
@@ -181,6 +190,8 @@ public class MapaFragment extends Fragment {
             }
 
         });
+
+
     }
 
     @Override

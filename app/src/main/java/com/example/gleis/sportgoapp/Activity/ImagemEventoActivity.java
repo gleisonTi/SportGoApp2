@@ -1,6 +1,8 @@
 package com.example.gleis.sportgoapp.Activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
+import com.example.gleis.sportgoapp.Entidades.Status;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Helper.Base64Custom;
 import com.example.gleis.sportgoapp.Preferencias.TinyDB;
@@ -35,12 +38,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -57,10 +63,12 @@ public class ImagemEventoActivity extends AppCompatActivity {
     private String urlImagem;
     private ProgressDialog prdUpload;
     private Evento evento = new Evento();
+    private Evento eventoEdit;
     private Usuario usuario;
     private  ProgressDialog progressDialog;
     private TinyDB tinyDB;
     private FirebaseUser user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +86,17 @@ public class ImagemEventoActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},PERMISSAO_REQUEST);
             }
+        }
+
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            btnCriarEvento.setText("Salvar Alterações");
+            btnVoltarImg.setVisibility(View.GONE);
+            eventoEdit = tinyDB.getObject("eventoEdit", Evento.class);
+            Picasso.get().load(eventoEdit.getImagemEvento()).into(imgEvento);
+
+        } else {
+            btnCriarEvento.setText("Proximo");
+            btnVoltarImg.setVisibility(View.VISIBLE);
         }
 
         evento = tinyDB.getObject("evento",Evento.class);
@@ -106,9 +125,33 @@ public class ImagemEventoActivity extends AppCompatActivity {
         btnCriarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prdUpload.setMessage("Salvando dados");
-                prdUpload.show();
-                criarEvento();
+
+                if (tinyDB.getBoolean("flagDeEdicao")) {
+
+                    new AlertDialog.Builder(ImagemEventoActivity.this)
+                            .setTitle("Edição de Evento")
+                            .setMessage("deseja editar imagem do evento " + eventoEdit.getTituloEvento() + "?")
+                            .setPositiveButton("sim",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            prdUpload.setMessage("Salvando dados");
+                                            prdUpload.show();
+                                            // objeto utilizado atualizar os dados
+
+                                            // add hash map nesse formato
+                                            //salva ediçoes do lat lng
+                                            salvarDados(salvaimagem);
+                                        }
+                                    })
+                            .setNegativeButton("não", null)
+                            .show();
+
+                } else {
+                    prdUpload.setMessage("Salvando dados");
+                    prdUpload.show();
+                    criarEvento();
+                }
 
             }
         });
@@ -205,20 +248,33 @@ public class ImagemEventoActivity extends AppCompatActivity {
                         Uri downloadUri = task.getResult();
                         System.out.println("url Image:"+downloadUri.toString());
 
-                        evento.setImagemEvento(downloadUri.toString());
-                        evento.setUsuarioCriador(usuario);
-                        evento.salvarFirebaseEvento();
+                        // atualiza ou salva imagem do evento
+                        if (tinyDB.getBoolean("flagDeEdicao")) {
 
-                        participar();
+
+                            Map<String, Object> taskMap = new HashMap<String, Object>();
+                            taskMap.put("imagemEvento", downloadUri.toString());
+                            eventoEdit.atualizaFirebaseEvento(taskMap);// atualiza url do evento a ser editado
+                            alert("Foram salvas as alterações no evento " + eventoEdit.getTituloEvento());
+
+                            tinyDB.remove("flagDeEdicao");
+                            Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
+                            startActivity(it);
+                            finish();
+                            prdUpload.dismiss();
+
+                        }else{
+                            evento.setImagemEvento(downloadUri.toString());
+                            evento.setUsuarioCriador(usuario);
+                            evento.setStatusEvento(new Status("Ativo",""));
+                            evento.salvarFirebaseEvento();
+                            participar();
+
+                        }
 
                     } else {
                         Toast.makeText(getApplicationContext(), "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                    alert("Evento criado com sucesso");
-                    prdUpload.dismiss();
-                    Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
-                    startActivity(it);
-                    finish();
                 }
             });
 
@@ -240,6 +296,12 @@ public class ImagemEventoActivity extends AppCompatActivity {
                 .getReference()
                 .child("usuarios")
                 .child(usuario.getId()).child("eventosAssociados").push().setValue(evento.getIdEvento());
+
+        alert("Evento criado com sucesso");
+        prdUpload.dismiss();
+        Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
+        startActivity(it);
+        finish();
     }
 
     private void alert(String s) {
@@ -258,14 +320,25 @@ public class ImagemEventoActivity extends AppCompatActivity {
 
     private void associaVariaveis() {
         // inicia shared preferences
-
         tinyDB =  new TinyDB(this);
-
         imgEvento = (CircleImageView) findViewById(R.id.id_imagem_evento);
         btnCriarEvento = (Button) findViewById(R.id.id_btn_criar_evento);
         btnVoltarImg = (Button) findViewById(R.id.id_voltar_img);
 
         this.prdUpload = new ProgressDialog(this);
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (tinyDB.getBoolean("flagDeEdicao")) {
+            if (tinyDB.getBoolean("flagDeEdicao")) {
+                Intent it = new Intent(ImagemEventoActivity.this, MenuActivity.class);
+                startActivity(it);
+            }
+            finish();
+        }
 
     }
 }

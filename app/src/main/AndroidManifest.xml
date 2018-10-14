@@ -23,10 +23,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDABX7l3mdhyC0B6GAQCgpd8yqsBX-3BtI" />
 
-        <activity android:name=".Activity.MainActivity"
+        <activity
+            android:name=".Activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -34,14 +36,17 @@
         <activity
             android:name=".Activity.MenuActivity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.CadastroLoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.LocalMapaActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.CriarEventoActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activity.CadastroLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.LocalMapaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.CriarEventoActivity"
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -51,16 +56,22 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
-        <activity android:name=".Activity.ImagemEventoActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.EventoActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.DadosUsuarios"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.EditarUsuarioActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.ChatActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Activity.ImagemEventoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.EventoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.DadosUsuarios"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.EditarUsuarioActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.ChatActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.ParticipantesActivity"></activity>
     </application>
 
 </manifest>

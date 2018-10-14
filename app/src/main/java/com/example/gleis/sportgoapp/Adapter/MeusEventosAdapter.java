@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import com.example.gleis.sportgoapp.Activity.DadosUsuarios;
 import com.example.gleis.sportgoapp.Activity.EventoActivity;
 import com.example.gleis.sportgoapp.Activity.ImagemEventoActivity;
 import com.example.gleis.sportgoapp.Activity.LocalMapaActivity;
+import com.example.gleis.sportgoapp.Activity.ParticipantesActivity;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
@@ -40,7 +42,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -250,6 +254,28 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
 
         // metodo disparado para sair de um evento
         private void sairDoEvento() {
+            // aqui o evento esta sendo removido da lista de eventos do usuario
+            FirebaseDatabase.getInstance().getReference().child("usuarios")
+                    .child(tinyDB.getObject("dadosUsuario", Usuario.class).getId())
+                    .child("eventosAssociados")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot child : dataSnapshot.getChildren()){
+                                String idEvento = child.getValue(String.class);// recupera id do evento
+                                if(listaEventos.get(getAdapterPosition()).getIdEvento().equals(idEvento)){
+                                    child.getRef().removeValue();
+                                }
+                            }
+
+                            listaEventos.remove(getAdapterPosition());
+                            Toast.makeText(mcontext,String.valueOf(getAdapterPosition()),Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
             // aqui o usuario esta sendo removido da lista de participantes e tambem o evendo esta sendo removido de sua lista
             FirebaseDatabase.getInstance().getReference().child("eventos")
                     .child(listaEventos.get(getAdapterPosition()).getIdEvento())
@@ -261,26 +287,7 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
                         for(DataSnapshot child : dataSnapshot.getChildren()){
                             child.getRef().removeValue();
                         }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-            // aqui o evento esta sendo removido da lista de eventos do usuario
-            FirebaseDatabase.getInstance().getReference().child("usuarios")
-                    .child(tinyDB.getObject("dadosUsuario", Usuario.class).getId())
-                    .child("eventosAssociados")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot child : dataSnapshot.getChildren()){
-                        String idEvento = child.getValue(String.class);// recupera id do evento
-                       if(listaEventos.get(getAdapterPosition()).getIdEvento().equals(idEvento)){
-                           child.getRef().removeValue();
-                       }
-                    }
                 }
 
                 @Override
@@ -292,15 +299,66 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             if(getItemCount() <= 1){
                 recyclerViewOnClickListenerHack.onClickListener(null, 0,true);
             }
+
         }
 
         private void verParticipantes() {
-            Toast.makeText(mcontext,"Abrir Participantes",Toast.LENGTH_LONG).show();
 
+            tinyDB.putObject("evento",listaEventos.get(getAdapterPosition()));
+            Intent it = new Intent(mcontext, ParticipantesActivity.class);
+            mcontext.startActivity(it);
+            
         }
 
         private void cancelarEvento() {
-            Toast.makeText(mcontext,"Abrir Motivo",Toast.LENGTH_LONG).show();
+
+
+            View dialogView = mlayoutInflater.inflate(R.layout.layout_alert_message, null);
+            final AlertDialog.Builder editDialog = new AlertDialog.Builder(mcontext);// cria alert com o motivo
+            editDialog.setView(dialogView);
+            editDialog.setTitle("Motivo de Cancelamento");
+            editDialog.setMessage("Para cancelar um evento e necessário uma menssagem para os usuários participantes ");
+            editDialog.setPositiveButton("Enviar Menssagem",null);
+
+            editDialog.setNegativeButton("Cancelar",null);
+
+            final EditText editTextMotivo = dialogView.findViewById(R.id.id_menssagem_evento);
+
+            final AlertDialog dialogEdit = editDialog.create();
+
+            dialogEdit.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(final DialogInterface dialog) {
+                    Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!editTextMotivo.getText().toString().isEmpty()) {
+                                if(!(editTextMotivo.getText().toString().length() < 40)){
+                                    setMotivoCancelamento(editTextMotivo.getText().toString());
+                                    dialogEdit.dismiss();
+                                }else{
+                                    Toast.makeText(mcontext,"Digite um Justificativa maior que 40 caracteres",Toast.LENGTH_SHORT).show();
+                                }
+
+                            }else{
+                                Toast.makeText(mcontext,"Uma menssagem de feedback para os participantes e obrigatoria para o cancelamento",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            });
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
+            builder.setTitle("Cancelar Evento")
+            .setMessage("Deseja realmente cancelar este evento?")
+            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialogEdit.show();
+
+                }
+            }).setNegativeButton("Não",null).create().show();
 
         }
 
@@ -339,22 +397,46 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
                 recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition(),false);
             }
         }
+        // cancela e seta motivo no evento
+        private void setMotivoCancelamento(String motivoCancelamento) {
+
+            Map<String,Object> taskMap = new HashMap<String,Object>();
+            // add hash map nesse formato
+            taskMap.put("tipo","Cancelado");
+            taskMap.put("motivoDescricao",motivoCancelamento);
+            listaEventos.get(getAdapterPosition()).cancelaFirebaseEvento(taskMap);// chama o metodo para cancelar o evento
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
+            builder.setTitle("Evento cancelado")
+                    .setMessage("Deseja remover este evento de sua lista de eventos?")
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            sairDoEvento();
+                        }
+                    }).setNegativeButton("Não",null).create().show();
+
+        }
     }
 
     // funçoes de edição do evento
     private void editDetalhesEvento() {
         Intent it = new Intent(mcontext, CriarEventoActivity.class);
         mcontext.startActivity(it);
+        ((Activity)mcontext).finish();
     }
 
     private void editLocalEvento() {
         Intent it = new Intent(mcontext, LocalMapaActivity.class);
         mcontext.startActivity(it);
+        ((Activity)mcontext).finish();// finaliza activity pelo adapter
+
     }
     // funções de edição do  evento
     private void editImagem() {
         Intent it = new Intent(mcontext, ImagemEventoActivity.class);
         mcontext.startActivity(it);
+        ((Activity)mcontext).finish();
     }
 
 
