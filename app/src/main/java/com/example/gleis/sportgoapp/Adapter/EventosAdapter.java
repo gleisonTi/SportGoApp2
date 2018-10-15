@@ -1,6 +1,7 @@
 package com.example.gleis.sportgoapp.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,9 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.gleis.sportgoapp.Activity.EventoActivity;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
 import com.example.gleis.sportgoapp.Entidades.Evento;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
@@ -32,16 +37,17 @@ import java.util.List;
  * Created by gleis on 17/04/2018.
  */
 
-public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHolder> {
+public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHolder> implements Filterable{
 
     private List<Evento> listaEventos;
+    private List<Evento> filtrolistaEventos;
     private LayoutInflater mlayoutInflater;
     public RecyclerViewOnClickListenerHack recyclerViewOnClickListenerHack;
     private Context mcontext;
     private DatabaseReference referenciaFirebase;
+    private List<Usuario> participantes;
     private List<Evento> eventos;
     private Evento todosEventos;
-    private List<Usuario> participantes;
     private Usuario usuario;
     private TinyDB tinyDB;
 
@@ -53,6 +59,7 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHo
 
         mcontext = c;
         listaEventos = l;
+        filtrolistaEventos = l;
         mlayoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         scale = mcontext.getResources().getDisplayMetrics().density;
@@ -178,11 +185,53 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHo
         return listaEventos.size();
     }
 
-    public void setRecyclerViewOnClickListenerHack(RecyclerViewOnClickListenerHack r){
-        this.recyclerViewOnClickListenerHack = r;
+
+    @Override
+    public Filter getFilter() {
+
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                String charString = charSequence.toString();
+
+                if (charString.isEmpty()) {
+
+                    listaEventos = filtrolistaEventos;
+
+                } else {
+
+                    List<Evento> filteredListProduto = new ArrayList<>();
+
+                    for (Evento evento : filtrolistaEventos) {
+
+                        if (evento.getTituloEvento().toLowerCase().contains(charString) || evento.getTipoEvento().toLowerCase().contains(charString)) {
+
+                            filteredListProduto.add(evento);
+                        }
+                    }
+
+                    listaEventos = filteredListProduto;
+
+                    for(Evento evento: listaEventos){
+                        System.out.println("evento "+evento.getTituloEvento());
+                    }
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = listaEventos;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                listaEventos = (List<Evento>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imgEvento;
         public ImageView imgUsuario;
@@ -211,15 +260,31 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHo
             btnDetalhes = (Button) itemView.findViewById(R.id.id_detalhes);
             btnParticipar = (Button) itemView.findViewById(R.id.id_participar);
 
-            itemView.setOnClickListener(this);
-            btnDetalhes.setOnClickListener(this);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    enviaDados(getAdapterPosition());
+                }
+            });
+
+            btnDetalhes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    enviaDados(getAdapterPosition());
+                }
+            });
         }
 
-        @Override
-        public void onClick(View v) {
-            if (recyclerViewOnClickListenerHack != null){
+        public void enviaDados(int position) {
+
+            System.out.println("evento:"+ listaEventos.get(position));
+            tinyDB.putObject("evento",listaEventos.get(position));
+
+            Intent it =  new Intent(mcontext,EventoActivity.class);
+            mcontext.startActivity(it);
+            /*if (recyclerViewOnClickListenerHack != null){
                 recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition(), false);
-            }
+            }*/
         }
 
 

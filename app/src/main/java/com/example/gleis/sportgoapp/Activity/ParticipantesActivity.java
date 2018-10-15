@@ -33,6 +33,8 @@ public class ParticipantesActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView recyclerViewParticipantes;
+    private ParticipantesAdapter adapter;
+
     private LinearLayout lnSemEvento;
     private LinearLayout lncarregando;
     private DatabaseReference referenciaFirebase;
@@ -40,7 +42,6 @@ public class ParticipantesActivity extends AppCompatActivity {
     private Evento todosEventos;
     private List<Usuario> participantes;
     private Usuario usuario;
-    private ParticipantesAdapter adapter;
     private TinyDB tinyDB;
 
     private DatabaseReference referenceFirebase;

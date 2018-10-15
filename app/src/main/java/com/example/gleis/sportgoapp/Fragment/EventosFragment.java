@@ -1,6 +1,7 @@
 package com.example.gleis.sportgoapp.Fragment;
 
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -10,7 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -34,20 +40,20 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EventosFragment extends Fragment implements RecyclerViewOnClickListenerHack {
+public class EventosFragment extends Fragment  {
 
     private RecyclerView recyclerViewEventos;
     private LinearLayout lnSemEvento;
     private LinearLayout lncarregando;
     private EventosAdapter adapter;
     private TinyDB tinyDB;
-
     private List<Evento> listaEvento;
-
     private DatabaseReference referenceFirebase;
-
-
     private Evento todosEventos;
+
+    private SearchView searchView = null;
+    private SearchView.OnQueryTextListener queryTextListener;
+
 
 
     public EventosFragment() {
@@ -158,7 +164,6 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
 
 
             adapter = new EventosAdapter(listaEvento,getActivity());
-            adapter.setRecyclerViewOnClickListenerHack(this);
             // adapter
             recyclerViewEventos.setAdapter(adapter);
             return  view;
@@ -169,22 +174,69 @@ public class EventosFragment extends Fragment implements RecyclerViewOnClickList
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        System.out.println("OK 1");
+
+        inflater.inflate(R.menu.menu_search, menu);
+        MenuItem search = menu.findItem(R.id.search);
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+
+        if (search != null) {
+            searchView = (SearchView) search.getActionView();
+        }
+
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    if (adapter != null) {
+                        // ver o como melhorar a pesquisa
+                        System.out.println("size: "+adapter.getItemCount());
+                        if(adapter.getItemCount() == 0 ){
+                            lnSemEvento.setVisibility(View.VISIBLE);
+                            recyclerViewEventos.setVisibility(View.GONE);
+                        }else{
+                            lnSemEvento.setVisibility(View.GONE);
+                            recyclerViewEventos.setVisibility(View.VISIBLE);
+                        }
+                        adapter.getFilter().filter(newText);
+                    }
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Log.i("onQueryTextSubmit", query);
+
+                    return false;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        searchView.setOnQueryTextListener(queryTextListener);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         adapter.notifyDataSetChanged();
     }
 
-
-    @Override
-    public void onClickListener(View view, int position, boolean b) {
-        Intent it = new Intent(getActivity(), EventoActivity.class);
-        tinyDB.putObject("evento",listaEvento.get(position));
-        getActivity().finish();
-        startActivity(it);
-        if(b){
-            lnSemEvento.setVisibility(view.VISIBLE);
-        }
-    }
 
     public boolean isOnline() {
         ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);

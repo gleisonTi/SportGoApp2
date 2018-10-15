@@ -109,6 +109,7 @@ public class MenuActivity extends AppCompatActivity
         //Configurar Adapter
         TabAdapter tabAdapter = new TabAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabAdapter);
+        viewPager.setCurrentItem(1,true);
         slidingTabLayout.setViewPager(viewPager);
 
 

@@ -123,7 +123,7 @@ public class CriarEventoActivity extends AppCompatActivity {
                                                 taskMap.put("tituloEvento",tituloEvento.getText().toString());
                                                 taskMap.put("qtdParticipante",Integer.parseInt(qtdParticipante.getText().toString()));
                                                 taskMap.put("horaEvento",tvHora.getText().toString());
-                                                taskMap.put("DescricaoEvento",descricaoEvento.getText().toString());
+                                                taskMap.put("descricaoEvento",descricaoEvento.getText().toString());
                                                 taskMap.put("dataEvento",tvData.getText().toString());
                                                 //salva edições do evento
                                                 eventoEdit.atualizaFirebaseEvento(taskMap);

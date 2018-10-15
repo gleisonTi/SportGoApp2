@@ -71,7 +71,8 @@
         <activity
             android:name=".Activity.ChatActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.ParticipantesActivity"></activity>
+        <activity android:name=".Activity.ParticipantesActivity" />
+        <activity android:name=".Activity.DadosUsuarioActivity"></activity>
     </application>
 
 </manifest>
