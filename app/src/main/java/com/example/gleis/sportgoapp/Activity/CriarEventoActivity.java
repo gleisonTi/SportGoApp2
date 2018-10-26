@@ -13,11 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -29,8 +32,11 @@ import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CriarEventoActivity extends AppCompatActivity {
@@ -42,9 +48,9 @@ public class CriarEventoActivity extends AppCompatActivity {
     private TextView tvData;
     private TextView tvHora;
     private EditText tituloEvento;
-    private EditText tipoEvento;
-    private EditText qtdParticipante;
     private EditText descricaoEvento;
+    private Spinner esporte;
+    private Spinner qtdParticipantes;
 
     private ImageView imgData;
     private ImageView imgHora;
@@ -53,13 +59,15 @@ public class CriarEventoActivity extends AppCompatActivity {
     private TinyDB tinyDB;
     private Evento evento;
     private Evento eventoEdit;
-
+    private  String tipoEsporte;
+    private String quantidade;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_criar_evento);
         // assiciar layout nas variveis
         associaVariaveis();
+
 
         // criação do evento
         evento = new Evento();
@@ -72,83 +80,138 @@ public class CriarEventoActivity extends AppCompatActivity {
             }
         });
 
+
+        final List<String> listaEsporte = new ArrayList<>(Arrays.asList("Futebol","Basquete","Ciclismo","Volêi","Natação","Tênis","Corrida","Skate","Futsal","Outros"));
+        esporte.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tipoEsporte = listaEsporte.get(position) ;
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ArrayAdapter<String> spin_adapter = new ArrayAdapter<String>(CriarEventoActivity.this, android.R.layout.simple_spinner_dropdown_item, listaEsporte);
+        esporte.setDropDownHorizontalOffset(100);
+        esporte.setAdapter(spin_adapter);
+
+
+        final List<String> listanumeros = new ArrayList<>();
+
+        int cont = 1;
+        for(int i = 1; i <101;i++ ){
+            listanumeros.add(String.valueOf(cont++));
+        }
+
+        qtdParticipantes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                quantidade = listanumeros.get(position) ;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ArrayAdapter<String> spin_adapter_qtd = new ArrayAdapter<String>(CriarEventoActivity.this, android.R.layout.simple_spinner_dropdown_item, listanumeros);
+        qtdParticipantes.setDropDownHorizontalOffset(10);
+        qtdParticipantes.setAdapter(spin_adapter_qtd);
+
         if (tinyDB.getBoolean("flagDeEdicao")) {
-            alert("flag edicao ativo");
             btnProximo.setText("Salvar Alterações");
             btnVoltar.setVisibility(View.GONE);
-
             eventoEdit = tinyDB.getObject("eventoEdit", Evento.class);
             tituloEvento.setText(eventoEdit.getTituloEvento());
-            tipoEvento.setText(eventoEdit.getTipoEvento());
-            qtdParticipante.setText(String.valueOf(eventoEdit.getQtdParticipante()));
             descricaoEvento.setText(eventoEdit.getDescricaoEvento());
             tvData.setText(eventoEdit.getDataEvento());
             tvHora.setText(eventoEdit.getHoraEvento());
 
+            ArrayAdapter myAdapEsporte = (ArrayAdapter) esporte.getAdapter();
+            System.out.println("Tipo :"+eventoEdit.getTipoEvento()+" qtd"+ eventoEdit.getQtdParticipante());
+            int positionEsporte  = myAdapEsporte.getPosition(eventoEdit.getTipoEvento());
+            esporte.setSelection(positionEsporte);
 
+            ArrayAdapter myAdapQtd = (ArrayAdapter) qtdParticipantes.getAdapter();
+            int positionqtd  = myAdapQtd.getPosition(String.valueOf(eventoEdit.getQtdParticipante()));
+            qtdParticipantes.setSelection(positionqtd);
         } else {
             btnProximo.setText("Proximo");
             btnVoltar.setVisibility(View.VISIBLE);
         }
 
 
+
         btnProximo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isOnline()) {
+                    if (!tituloEvento.getText().toString().isEmpty() //  testa se algum campo esta vazio
+                            && !tipoEsporte.isEmpty()
+                            && !quantidade.isEmpty()
+                            && !descricaoEvento.getText().toString().isEmpty()
+                            && !tvHora.getText().equals("Hora")
+                            && !tvData.getText().equals("Data") ) {
+                        // Envio de dados para activity LocalMapaActivity
+                        Intent it = new Intent(CriarEventoActivity.this, LocalMapaActivity.class);
+                        // passando dados para o objeto evento
+                        evento.setTituloEvento(tituloEvento.getText().toString());
+                        evento.setTipoEvento(tipoEsporte);
+                        evento.setQtdParticipante(Integer.parseInt(quantidade));
+                        evento.setDescricaoEvento(descricaoEvento.getText().toString());
+                        evento.setDataEvento(tvData.getText().toString());
+                        evento.setHoraEvento(tvHora.getText().toString());
 
-                    // Envio de dados para activity LocalMapaActivity
-                    Intent it = new Intent(CriarEventoActivity.this, LocalMapaActivity.class);
-                    // passando dados para o objeto evento
-                    evento.setTituloEvento(tituloEvento.getText().toString());
-                    evento.setTipoEvento(tipoEvento.getText().toString());
-                    evento.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
-                    evento.setDescricaoEvento(descricaoEvento.getText().toString());
-                    evento.setDataEvento(tvData.getText().toString());
-                    evento.setHoraEvento(tvHora.getText().toString());
+                        if (tinyDB.getBoolean("flagDeEdicao")) {
 
-                    if (tinyDB.getBoolean("flagDeEdicao")) {
+                            new AlertDialog.Builder(CriarEventoActivity.this)
+                                    .setTitle("Edição de Evento")
+                                    .setMessage("deseja editar o evento " + eventoEdit.getTituloEvento() + "?")
+                                    .setPositiveButton("sim",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    // objeto utilizado atualizar os dados
+                                                    Map<String, Object> taskMap = new HashMap<String, Object>();
+                                                    // add hash map nesse formato
+                                                    taskMap.put("tipoEvento", tipoEsporte);
+                                                    taskMap.put("tituloEvento", tituloEvento.getText().toString());
+                                                    taskMap.put("qtdParticipante", Integer.parseInt(quantidade));
+                                                    taskMap.put("horaEvento", tvHora.getText().toString());
+                                                    taskMap.put("descricaoEvento", descricaoEvento.getText().toString());
+                                                    taskMap.put("dataEvento", tvData.getText().toString());
+                                                    //salva edições do evento
+                                                    eventoEdit.atualizaFirebaseEvento(taskMap);
+                                                    alert("Foram salvas alterações no evento " + eventoEdit.getTituloEvento());
+                                                    tinyDB.remove("flagDeEdicao");
+                                                    Intent it = new Intent(CriarEventoActivity.this, MenuActivity.class);
+                                                    startActivity(it);
+                                                    finish();
+                                                }
+                                            })
+                                    .setNegativeButton("não", null)
+                                    .show();
 
-                        new AlertDialog.Builder(CriarEventoActivity.this)
-                                .setTitle("Edição de Evento")
-                                .setMessage("deseja editar o evento "+eventoEdit.getTituloEvento()+"?")
-                                .setPositiveButton("sim",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                               // objeto utilizado atualizar os dados
-                                                Map<String,Object> taskMap = new HashMap<String,Object>();
-                                                // add hash map nesse formato
-                                                taskMap.put("tipoEvento",tipoEvento.getText().toString());
-                                                taskMap.put("tituloEvento",tituloEvento.getText().toString());
-                                                taskMap.put("qtdParticipante",Integer.parseInt(qtdParticipante.getText().toString()));
-                                                taskMap.put("horaEvento",tvHora.getText().toString());
-                                                taskMap.put("descricaoEvento",descricaoEvento.getText().toString());
-                                                taskMap.put("dataEvento",tvData.getText().toString());
-                                                //salva edições do evento
-                                                eventoEdit.atualizaFirebaseEvento(taskMap);
-                                                alert("Foram salvas alterações no evento "+eventoEdit.getTituloEvento());
-                                                tinyDB.remove("flagDeEdicao");
-                                                Intent it = new Intent(CriarEventoActivity.this, MenuActivity.class);
-                                                startActivity(it);
-                                                finish();
-                                            }
-                                        })
-                                .setNegativeButton("não", null)
-                                .show();
+                        } else {
+                            // salvando evento na memoria
+                            tinyDB.putObject("evento", evento);
+                            startActivity(it);
+                            alert("Salvando dados...");
+                            finish();
+                        }
 
-                    } else{
-                        // salvando evento na memoria
-                        tinyDB.putObject("evento", evento);
-                        startActivity(it);
-                        alert("Salvando dados...");
-                        finish();
+                    }else {
+                        alert("Preencha todos os campos");
                     }
-
                 }
-
             }
         });
+
+
 
         imgData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,8 +237,6 @@ public class CriarEventoActivity extends AppCompatActivity {
 
         tinyDB = new TinyDB(this);
         this.tituloEvento = (EditText) findViewById(R.id.id_titulo_evento);
-        this.tipoEvento = (EditText) findViewById(R.id.id_tipo_evento);
-        this.qtdParticipante = (EditText) findViewById(R.id.id_qtd_evento);
         this.descricaoEvento = (EditText) findViewById(R.id.id_descricao);
         this.tvData = (TextView) findViewById(R.id.id_tv_data);
         this.tvHora = (TextView) findViewById(R.id.id_tv_hora);
@@ -184,6 +245,8 @@ public class CriarEventoActivity extends AppCompatActivity {
         this.imgHora = (ImageView) findViewById(R.id.img_hora);
         this.btnVoltar = (Button) findViewById(R.id.id_btn_voltar);
         this.btnProximo = (Button) findViewById(R.id.id_btn_proximo);
+        this.qtdParticipantes = (Spinner) findViewById(R.id.id_spiner_qtd);
+        this.esporte = (Spinner) findViewById(R.id.id_spiner_esporte);
 
     }
 

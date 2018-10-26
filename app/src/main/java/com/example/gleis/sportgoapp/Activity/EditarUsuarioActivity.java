@@ -9,6 +9,7 @@ import android.widget.RadioButton;
 import com.example.gleis.sportgoapp.Entidades.Usuario;
 import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
+import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -38,9 +39,15 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         setContentView(R.layout.activity_editar_usuario);
         initVariaveis();
 
+        edtNome.setEnabled(false);
+        edtIdade.setEnabled(false);
+        edtEsporte.setEnabled(false);
+        edtEstado.setEnabled(false);
+        edtCidade.setEnabled(false);
+
         Object dadosUsuario = tinyDB.getObject("dadosUsuario", Usuario.class);
         usuario = (Usuario) dadosUsuario;
-
+        Picasso.get().load(usuario.getUrlImagem()).into(imgPerfil);
         edtNome.setText(usuario.getNome());
         edtIdade.setText(usuario.getIdade());
         edtEsporte.setText(usuario.getEsporte());
@@ -59,6 +66,8 @@ public class EditarUsuarioActivity extends AppCompatActivity {
         tinyDB = new TinyDB(this);
 
         imgPerfil = (CircleImageView) findViewById(R.id.id_editar_imagem_perfil);
+
+
 
         edtNome = (EditText) findViewById(R.id.id_editar_nome);
         edtIdade = (EditText) findViewById(R.id.id_editar_idade);

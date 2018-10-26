@@ -82,36 +82,44 @@
 
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/id_voltar_loc"
-        android:layout_width="@dimen/largura_btn_voltar"
-        android:layout_height="@dimen/heihtButton"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/color_btn"
-        android:text="@string/btn_voltar"
-        android:textColor="@color/edit_text_color"
-        android:textStyle="bold"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="8dp" />
+        tools:layout_editor_absoluteX="55dp"
+        tools:ignore="MissingConstraints">
 
-    <Button
-        android:id="@+id/id_proximo_loc"
-        android:layout_width="@dimen/largura_btn_proximo"
-        android:layout_height="@dimen/heihtButton"
-        android:background="@drawable/edittext_layout"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="@string/btn_proximo"
-        android:textColor="@color/edit_text_color"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginRight="8dp" />
+        <Button
+            android:id="@+id/id_voltar_loc"
+            android:layout_width="@dimen/largura_btn_voltar"
+            android:layout_height="@dimen/heihtButton"
+            android:layout_marginRight="60dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/color_btn"
+            android:text="@string/btn_voltar"
+            android:textColor="@color/edit_text_color"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/id_proximo_loc"
+            android:layout_width="@dimen/largura_btn_proximo"
+            android:layout_height="@dimen/heihtButton"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="@string/btn_proximo"
+            android:textColor="@color/edit_text_color"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/textView16"

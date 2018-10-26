@@ -101,38 +101,42 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
         eventos = new ArrayList<>();
         participantes = new ArrayList<>();
         referenciaFirebase = ConfiguraFirebase.getFirebase();
-        referenciaFirebase.child("eventos").orderByChild("idEvento").equalTo(itemEvento.getIdEvento()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                eventos.clear();
-                participantes.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                    todosEventos = postSnapshot.getValue(Evento.class);
-                    Picasso.get().load(todosEventos.getImagemEvento()).resize(width, height).centerCrop().into(holder.imgEvento);
-                    Picasso.get().load(todosEventos.getUsuarioCriador().getUrlImagem()).resize(width, height).centerCrop().into(holder.imgCriador);
-                    eventos.add(todosEventos);
-                    // pega quantidade de participantes
-                    for (DataSnapshot post : postSnapshot.child("participantes").getChildren()) {
-                        usuario = post.getValue(Usuario.class);
-                        participantes.add(usuario);
+
+        if(itemEvento != null) {
+            referenciaFirebase.child("eventos").orderByChild("idEvento").equalTo(itemEvento.getIdEvento()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    eventos.clear();
+                    participantes.clear();
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                        todosEventos = postSnapshot.getValue(Evento.class);
+                        Picasso.get().load(todosEventos.getImagemEvento()).resize(width, height).centerCrop().into(holder.imgEvento);
+                        Picasso.get().load(todosEventos.getUsuarioCriador().getUrlImagem()).resize(width, height).centerCrop().into(holder.imgCriador);
+                        eventos.add(todosEventos);
+                        // pega quantidade de participantes
+                        for (DataSnapshot post : postSnapshot.child("participantes").getChildren()) {
+                            usuario = post.getValue(Usuario.class);
+                            participantes.add(usuario);
+                        }
                     }
+
+                    holder.tvQtdParticpantes.setText(participantes.size() + " ");
                 }
 
-                holder.tvQtdParticpantes.setText(participantes.size() + " ");
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                }
+            });
+            holder.tvTitulo.setText(itemEvento.getTituloEvento());
+            holder.tvDescricao.setText(itemEvento.getDescricaoEvento());
+            holder.tvData.setText(itemEvento.getDataEvento());
+            holder.tvMaxParticpantes.setText("/ " + String.valueOf(itemEvento.getQtdParticipante()));
+            if (itemEvento.getUsuarioCriador().getEmail().equals(tinyDB.getObject("dadosUsuario", Usuario.class).getEmail())) {
+                holder.imgadm.setVisibility(View.VISIBLE);
             }
-        });
-        holder.tvTitulo.setText(itemEvento.getTituloEvento());
-        holder.tvDescricao.setText(itemEvento.getDescricaoEvento());
-        holder.tvData.setText(itemEvento.getDataEvento());
-        holder.tvMaxParticpantes.setText("/ " + String.valueOf(itemEvento.getQtdParticipante()));
-        if(itemEvento.getUsuarioCriador().getEmail().equals(tinyDB.getObject("dadosUsuario", Usuario.class).getEmail())){
-            holder.imgadm.setVisibility(View.VISIBLE);
         }
     }
 
@@ -367,8 +371,6 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             tinyDB.putBoolean("flagDeEdicao",true);
             // evento que sera editado
             tinyDB.putObject("eventoEdit",listaEventos.get(getAdapterPosition()));
-
-            Toast.makeText(mcontext,"Abrir Edição do Evento",Toast.LENGTH_LONG).show();
             AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
             builder.setTitle("Escolha uma opção que deseja editar");
             String[] animals = {"Detalhes do evento", "Local do evento", "Imagem do evento"};

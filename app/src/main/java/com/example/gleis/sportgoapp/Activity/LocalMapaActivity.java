@@ -96,20 +96,21 @@ public class LocalMapaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // passando dados de lat, lng e endereco do evento
-                evento.setEnderecolat(lat);
-                evento.setEnderecolng(lng);
-                evento.setEndereco(endereco);
+                if (!lat.toString().isEmpty() && !lng.toString().isEmpty()) {
+                    // passando dados de lat, lng e endereco do evento
+                    evento.setEnderecolat(lat);
+                    evento.setEnderecolng(lng);
+                    evento.setEndereco(endereco);
 
-                if (tinyDB.getBoolean("flagDeEdicao")) {
+                    if (tinyDB.getBoolean("flagDeEdicao")) {
 
-                    new AlertDialog.Builder(LocalMapaActivity.this)
-                            .setTitle("Edição de Evento")
-                            .setMessage("deseja editar o evento " + eventoEdit.getTituloEvento() + "?")
-                            .setPositiveButton("sim",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
+                        new AlertDialog.Builder(LocalMapaActivity.this)
+                                .setTitle("Edição de Evento")
+                                .setMessage("deseja editar o evento " + eventoEdit.getTituloEvento() + "?")
+                                .setPositiveButton("sim",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
                                                /* eventoEdit.setTituloEvento(tituloEvento.getText().toString());
                                                 eventoEdit.setTipoEvento(tipoEvento.getText().toString());
                                                 eventoEdit.setQtdParticipante(Integer.parseInt(qtdParticipante.getText().toString()));
@@ -117,38 +118,41 @@ public class LocalMapaActivity extends AppCompatActivity {
                                                 eventoEdit.setDataEvento(tvData.getText().toString());
                                                 eventoEdit.setHoraEvento(tvHora.getText().toString());*/
 
-                                            // objeto utilizado atualizar os dados
-                                            Map<String, Object> taskMap = new HashMap<String, Object>();
-                                            // add hash map nesse formato
+                                                // objeto utilizado atualizar os dados
+                                                Map<String, Object> taskMap = new HashMap<String, Object>();
+                                                // add hash map nesse formato
 
-                                            //salva ediçoes do lat lng
-                                            taskMap.put("enderecolat", lat);
-                                            taskMap.put("enderecolng",lng);
-                                            taskMap.put("endereco",endereco);
+                                                //salva ediçoes do lat lng
+                                                taskMap.put("enderecolat", lat);
+                                                taskMap.put("enderecolng", lng);
+                                                taskMap.put("endereco", endereco);
 
-                                            eventoEdit.atualizaFirebaseEvento(taskMap);
-                                            alert("Foram salvas alterações no evento " + eventoEdit.getTituloEvento());
-                                            tinyDB.remove("flagDeEdicao");
-                                            Intent it = new Intent(LocalMapaActivity.this, MenuActivity.class);
-                                            startActivity(it);
+                                                eventoEdit.atualizaFirebaseEvento(taskMap);
+                                                alert("Foram salvas alterações no evento " + eventoEdit.getTituloEvento());
+                                                tinyDB.remove("flagDeEdicao");
+                                                Intent it = new Intent(LocalMapaActivity.this, MenuActivity.class);
+                                                startActivity(it);
 
-                                            finish();
-                                        }
-                                    })
-                            .setNegativeButton("não", null)
-                            .show();
+                                                finish();
+                                            }
+                                        })
+                                .setNegativeButton("não", null)
+                                .show();
 
-                } else {
-                    //salva novamente os dados na memoria
-                    tinyDB.putObject("evento", evento);
-                    // devera ser criado condição para avançar
+                    } else {
+                        //salva novamente os dados na memoria
+                        tinyDB.putObject("evento", evento);
+                        // devera ser criado condição para avançar
 
-                    Intent it = new Intent(LocalMapaActivity.this, ImagemEventoActivity.class);
-                    startActivity(it);
-                    finish();
+                        Intent it = new Intent(LocalMapaActivity.this, ImagemEventoActivity.class);
+                        startActivity(it);
+                        finish();
 
+                    }
+
+                }else{
+                    alert("Escolha um Endereço");
                 }
-
             }
         });
         btnVoltar.setOnClickListener(new View.OnClickListener() {

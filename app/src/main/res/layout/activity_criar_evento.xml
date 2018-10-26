@@ -48,52 +48,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento">
 
-        <EditText
-            android:id="@+id/id_tipo_evento"
-            android:layout_width="175dp"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_marginLeft="44dp"
+            android:layout_width="43dp"
+            android:layout_height="43dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edittext_layout"
             android:backgroundTint="@color/editTextPrimary"
-            android:hint="Tipo do evento"
-            android:inputType="textCapSentences"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp"
-            android:theme="@style/AppTheme"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento"
-            tools:ignore="MissingConstraints" />
+            android:padding="6dp"
+            android:src="@drawable/icon_sport" />
+
+        <Spinner
+            android:id="@+id/id_spiner_esporte"
+            android:layout_width="121dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/colorSecondText">
+
+        </Spinner>
 
         <ImageView
-            android:layout_marginLeft="40dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
             android:background="@drawable/edittext_layout"
             android:backgroundTint="@color/editTextPrimary"
             android:padding="6dp"
             android:src="@drawable/ic_action_users" />
 
-
-        <EditText
-            android:id="@+id/id_qtd_evento"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+        <Spinner
+            android:id="@+id/id_spiner_qtd"
+            android:layout_width="91dp"
+            android:layout_height="44dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_layout"
-            android:backgroundTint="@color/editTextPrimary"
-            android:hint="Nº"
-            android:inputType="number"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
+            android:backgroundTint="@color/colorSecondText">
 
-            android:textAlignment="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/id_titulo_evento"
-            tools:ignore="MissingConstraints"></EditText>
+        </Spinner>
 
     </LinearLayout>
 
@@ -144,20 +135,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="51dp"
         android:layout_marginBottom="8dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:ignore="MissingConstraints">
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp">
 
         <Button
             android:id="@+id/id_btn_voltar"
             android:layout_width="100dp"
             android:layout_height="@dimen/heihtButton"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/edittext_layout"
             android:backgroundTint="@color/color_btn"
             android:text="Voltar"
@@ -168,9 +158,6 @@
             android:id="@+id/id_btn_proximo"
             android:layout_width="150dp"
             android:layout_height="@dimen/heihtButton"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="16dp"
             android:background="@drawable/edittext_layout"
             android:backgroundTint="@color/colorPrimary"
             android:text="Proximo"

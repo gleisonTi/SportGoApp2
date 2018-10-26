@@ -111,41 +111,54 @@ public class CadastroActivity extends AppCompatActivity {
                 // teste se há conexão
                 if (isOnline()) {
 
-                    prdUpload.setMessage("Salvando Dados ...");
-                    prdUpload.show();
-                    Intent it = getIntent();
-                    Bundle bundle = it.getExtras();
+                    if (!edtNome.getText().toString().isEmpty() &&
+                            !edtIdade.getText().toString().isEmpty() &&
+                            !edtEsporte.getText().toString().isEmpty() &&
+                            !edtEstado.getText().toString().isEmpty() &&
+                            !edtCidade.getText().toString().isEmpty()
+                            ) {
+                        if (rbFeminino.isChecked() || rbMasculino.isChecked()) {
 
-                    String sexo = "";
 
-                    if (rbFeminino.isChecked()) {
-                        sexo = "Feminino";
+                            prdUpload.setMessage("Salvando Dados ...");
+                            prdUpload.show();
+                            Intent it = getIntent();
+                            Bundle bundle = it.getExtras();
+
+                            String sexo = "";
+
+                            if (rbFeminino.isChecked()) {
+                                sexo = "Feminino";
+                            } else {
+                                sexo = "Masculino";
+                            }
+
+                            String nome = edtNome.getText().toString();
+                            String idade = edtIdade.getText().toString();
+                            String esporte = edtEsporte.getText().toString();
+                            String estado = edtEstado.getText().toString();
+                            String cidade = edtCidade.getText().toString();
+                            String email = bundle.getString("email");
+                            String senha = bundle.getString("senha");
+
+
+                            usuario.setNome(nome);
+                            usuario.setIdade(idade);
+                            usuario.setEsporte(esporte);
+                            usuario.setEstado(estado);
+                            usuario.setCidade(cidade);
+                            usuario.setSexo(sexo);
+                            usuario.setEmail(email);
+                            usuario.setSenha(senha);
+
+                            //salva a imagem e os dados do usuario
+                            salvarDados(salvaimagem);
+                        }else{
+                            alert("Selecione o sexo do usuário");
+                        }
                     } else {
-                        sexo = "Masculino";
+                        alert("Preencha todos os campos");
                     }
-
-                    String nome = edtNome.getText().toString();
-                    String idade = edtIdade.getText().toString();
-                    String esporte = edtEsporte.getText().toString();
-                    String estado = edtEstado.getText().toString();
-                    String cidade = edtCidade.getText().toString();
-                    String email = bundle.getString("email");
-                    String senha = bundle.getString("senha");
-
-
-                    usuario.setNome(nome);
-                    usuario.setIdade(idade);
-                    usuario.setEsporte(esporte);
-                    usuario.setEstado(estado);
-                    usuario.setCidade(cidade);
-                    usuario.setSexo(sexo);
-                    usuario.setEmail(email);
-                    usuario.setSenha(senha);
-
-                    //salva a imagem e os dados do usuario
-                    salvarDados(salvaimagem);
-
-                    alert("Cadastrando dados...");
                 } else {
                     alert("Sem conexão no momento :(");
                 }

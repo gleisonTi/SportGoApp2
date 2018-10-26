@@ -66,6 +66,7 @@ public class MenuActivity extends AppCompatActivity
     private Usuario usuario;
     private FirebaseUser user;
     private DatabaseReference usuariodados;
+    private FloatingActionButton fab;
     private TinyDB tinyDB;
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -112,8 +113,31 @@ public class MenuActivity extends AppCompatActivity
         viewPager.setCurrentItem(1,true);
         slidingTabLayout.setViewPager(viewPager);
 
+        slidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 2){
+                    fab.setVisibility(View.GONE);
+                }else if(position == 1){
+                    fab.setVisibility(View.VISIBLE);
+                }if(position == 0){
+                    fab.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,6 +161,9 @@ public class MenuActivity extends AppCompatActivity
         emailPerfil = (TextView) hView.findViewById(R.id.id_email_perfil);
 
         navigationView.setNavigationItemSelectedListener(this);
+
+        final LatLng latLng = new LatLng(-20.557311, -47.413900);
+        tinyDB.putObject("latlngAtual",latLng);
     }
 
 
@@ -213,6 +240,7 @@ public class MenuActivity extends AppCompatActivity
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.stl_tabs);
         viewPager = (ViewPager) findViewById(R.id.vp_pagina);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
     }
 
@@ -300,6 +328,9 @@ public class MenuActivity extends AppCompatActivity
         if (mLastLocation != null) {
             // Criamos o LatLng através do Location
             final LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            tinyDB.putObject("latlngAtual",latLng);
+        }else{
+            final LatLng latLng = new LatLng(-20.557311, -47.413900);
             tinyDB.putObject("latlngAtual",latLng);
         }
 

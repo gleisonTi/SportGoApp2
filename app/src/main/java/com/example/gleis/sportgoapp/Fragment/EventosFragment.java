@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -40,7 +41,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EventosFragment extends Fragment  {
+public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnRefreshListener  {
 
     private RecyclerView recyclerViewEventos;
     private LinearLayout lnSemEvento;
@@ -50,6 +51,7 @@ public class EventosFragment extends Fragment  {
     private List<Evento> listaEvento;
     private DatabaseReference referenceFirebase;
     private Evento todosEventos;
+    private SwipeRefreshLayout swipRefresh;
 
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
@@ -69,6 +71,25 @@ public class EventosFragment extends Fragment  {
             // inflar o layout para este fragmento
              view = inflater.inflate(R.layout.fragment_eventos, container, false);
             recyclerViewEventos = (RecyclerView) view.findViewById(R.id.id_recycler_view_eventos);
+            swipRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+            swipRefresh.setColorSchemeResources(R.color.colorPrimary,
+                    android.R.color.holo_green_dark,
+                    android.R.color.holo_orange_dark,
+                    android.R.color.holo_blue_dark);
+
+            swipRefresh.setOnRefreshListener(this);
+
+            swipRefresh.post(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    swipRefresh.setRefreshing(true);
+
+                    // Fetching data from server
+                    loadRecyclerViewData();
+                }
+            });
             //metodo para carregar dados no final da lista !!! metodo antigo
             recyclerViewEventos.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -93,7 +114,8 @@ public class EventosFragment extends Fragment  {
             //criando layout para o fragment
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             llm.setOrientation(LinearLayoutManager.VERTICAL);
-            llm.setReverseLayout(false);
+            llm.setReverseLayout(true);
+            llm.setStackFromEnd (true);
             // setando layout no fragment
             recyclerViewEventos.setLayoutManager(llm);
 
@@ -119,7 +141,6 @@ public class EventosFragment extends Fragment  {
             referenceFirebase.child("eventos").orderByChild("idEvento").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
 
                     if (dataSnapshot.exists()) {
                         lncarregando.setVisibility(View.GONE);
@@ -170,6 +191,14 @@ public class EventosFragment extends Fragment  {
         }
 
         return view;
+
+    }
+
+    private void loadRecyclerViewData() {
+        swipRefresh.setRefreshing(true);
+
+        adapter.notifyDataSetChanged();
+        swipRefresh.setRefreshing(false);
 
     }
 
@@ -243,5 +272,10 @@ public class EventosFragment extends Fragment  {
 
         return manager.getActiveNetworkInfo() != null &&
                 manager.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    @Override
+    public void onRefresh() { // metodo de refresf da pagina
+        loadRecyclerViewData();
     }
 }

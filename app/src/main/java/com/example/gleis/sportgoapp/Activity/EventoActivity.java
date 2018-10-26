@@ -322,8 +322,6 @@ public class EventoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent it = new Intent(EventoActivity.this,MenuActivity.class);
-        startActivity(it);
         finish();
     }
 
