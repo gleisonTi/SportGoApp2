@@ -97,7 +97,7 @@ public class ChatActivity extends AppCompatActivity {
                                     .child(evento.getIdEvento())
                                         .child("mensagens")
                                         .push()
-                                        .setValue(new ChatMessage(usuariologado.getUrlImagem(),usuariologado.getNome(),editMessage.getText().toString()) // cria a mensagem
+                                        .setValue(new ChatMessage(usuariologado.getUrlImagem(),usuariologado.getNome(),usuariologado.getEmail(),editMessage.getText().toString()) // cria a mensagem
                                         ).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -122,9 +122,7 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
         switch (item.getItemId()) {
             case android.R.id.home:  //ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
-                Intent it = new Intent(ChatActivity.this,MenuActivity.class);
-                startActivity(it);
-                finish();//Método para matar a activity e não deixa-lá indexada na pilhagem
+               onBackPressed();//Método para matar a activity e não deixa-lá indexada na pilhagem
                 break;
             default:break;
         }

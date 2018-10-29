@@ -1,6 +1,13 @@
 package com.example.gleis.sportgoapp.Entidades;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.widget.Toast;
+
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
@@ -114,22 +121,26 @@ public class Usuario {
         referenciaFirebase.child("usuarios").child(String.valueOf(getId())).setValue(this);
     }
 
-    @Exclude
-    public Map<String, Object> toMap(){
-        HashMap<String, Object> hashMapUsuario = new HashMap<>();
+    public void removeFirebase(){
+        DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
+        referenciaFirebase.child("usuarios").child(String.valueOf(getId())).removeValue();
+    }
+    public void atualizaFirebaseUsuario(Map<String, Object> taskMap, final Context context) {
+        DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
+        referenciaFirebase.child("usuarios").child(getId()).updateChildren(taskMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isComplete()){
+                    Toast.makeText(context,"Dados atualizados com sucesso",Toast.LENGTH_LONG).show();
+                }
 
-        hashMapUsuario.put("imagem",getUrlImagem());
-        hashMapUsuario.put("id",getId());
-        hashMapUsuario.put("nome",getNome());
-        hashMapUsuario.put("idade",getIdade());
-        hashMapUsuario.put("esporte",getEsporte());
-        hashMapUsuario.put("estado",getEstado());
-        hashMapUsuario.put("cidade",getCidade());
-        hashMapUsuario.put("email",getEmail());
-        hashMapUsuario.put("senha",getSenha());
-        hashMapUsuario.put("sexo",getSexo());
-
-        return hashMapUsuario;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
 

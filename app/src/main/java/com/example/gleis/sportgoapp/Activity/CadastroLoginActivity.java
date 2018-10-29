@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.regex.Pattern;
 
@@ -22,6 +23,7 @@ public class    CadastroLoginActivity extends AppCompatActivity {
 
     private Button btnProximo;
     private Button btnVoltar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -36,7 +36,7 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<ChatMessage,ChatHolder>
     @Override
     protected void onBindViewHolder(@NonNull ChatHolder holder, int position, @NonNull ChatMessage model) {
 
-        if (model.getUserName().equals(tinyDB.getObject("dadosUsuario",Usuario.class).getNome())) {
+        if (model.getEmail().equals(tinyDB.getObject("dadosUsuario",Usuario.class).getEmail())) {
             holder.layoutDirecao.setGravity(Gravity.RIGHT);
             holder.layoutDirecao.setPadding(10, 5, LinearLayout.LayoutParams.WRAP_CONTENT, 5);
             holder.layoutBalao.setBackgroundResource(R.drawable.drawable_rigth_layout);

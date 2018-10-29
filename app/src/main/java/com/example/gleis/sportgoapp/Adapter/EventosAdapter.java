@@ -282,9 +282,7 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.MyViewHo
 
             Intent it =  new Intent(mcontext,EventoActivity.class);
             mcontext.startActivity(it);
-            /*if (recyclerViewOnClickListenerHack != null){
-                recyclerViewOnClickListenerHack.onClickListener(v, getAdapterPosition(), false);
-            }*/
+
         }
 
 

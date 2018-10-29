@@ -29,6 +29,8 @@ import com.example.gleis.sportgoapp.Helper.Base64Custom;
 import com.example.gleis.sportgoapp.Preferencias.TinyDB;
 import com.example.gleis.sportgoapp.R;
 import com.example.gleis.sportgoapp.Services.BuscaEnderecoLatLong;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -37,6 +39,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,6 +51,8 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,9 +68,11 @@ public class MapaFragment extends Fragment {
     private FirebaseUser user;
     private DatabaseReference usuariodados;
     private MarkerOptions marker; // vc parou aqui
-
     // Latitude  e Longitude  da região do usuario.
     private LatLng latLngRegiao;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    protected Location mLastLocation;
     public static final int REQUEST_FINE_LOCATION = 99;
 
 
@@ -79,13 +87,20 @@ public class MapaFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mapa, container, false);
         // iniciando Tinydb
         tinyDB = new TinyDB(getContext());
+        // pega ultima localização do usuario;
+        getLastLocation();
         //inicializando mapa
         mapView = (MapView) view.findViewById(R.id.mapViewEventos);
         mapView.onCreate(savedInstanceState);
         if (isOnline()) {
-
-            latLngRegiao = tinyDB.getObject("latlngAtual", LatLng.class);
+            //latLngRegiao = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+            if(mLastLocation != null){
+                latLngRegiao = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+            }else{
+                latLngRegiao = tinyDB.getObject("latlngAtual", LatLng.class);
+            }
             System.out.println("lat do usuario" + latLngRegiao.latitude + latLngRegiao.longitude);
+
             mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
@@ -102,7 +117,6 @@ public class MapaFragment extends Fragment {
                             return;
                         }
                         googleMap.setMyLocationEnabled(true);
-
                     }
                 }
             });
@@ -116,26 +130,20 @@ public class MapaFragment extends Fragment {
 
     private void listaEventosMapa() {
 
-        listaEvento =  new ArrayList<>();
+        listaEvento = new ArrayList<>();
 
         referenceFirebase = ConfiguraFirebase.getFirebase();
 
         referenceFirebase.child("eventos").orderByChild("idEvento").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-            // Listando os eventos nos mapa a partir do Firebasedatabase
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                // Listando os eventos nos mapa a partir do Firebasedatabase
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     if (dataSnapshot.exists()) {
                         todosEventos = postSnapshot.getValue(Evento.class);
                         if (todosEventos.getStatusEvento().getTipo().equals("Ativo")) {
-                            Double lat = todosEventos.getEnderecolat();
-                            Double lng = todosEventos.getEnderecolng();
-                            String titulo = todosEventos.getTituloEvento();
-
-
                             mostrarNoMapa(todosEventos);
                         }
-
                     }
 
                 }
@@ -146,6 +154,79 @@ public class MapaFragment extends Fragment {
 
             }
         });
+
+    }
+
+    private void getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity()); // utiliza a api do google api Service
+        mFusedLocationClient.getLastLocation()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            //obtém a última localização conhecida
+                            mLastLocation = task.getResult();
+                            System.out.println(" encontrado" +mLastLocation.getLatitude()+" | "+ mLastLocation.getLongitude());
+                        } else {
+                            System.out.println("nao encontrado" +task.getException());
+                            //Não há localização conhecida ou houve uma excepção
+                            //A excepção pode ser obtida com task.getException()
+                        }
+                    }
+                });
+    }
+
+
+    private void mostrarNoMapa(final Evento evento) {
+
+        listaEvento.add(evento);
+
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                //latitude e longitude dos eventos
+                LatLng latLng = new LatLng(evento.getEnderecolat(), evento.getEnderecolng());
+                // posicionando mapa na região do usuario
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                // marcando locais dos eventos
+
+                marker = new MarkerOptions();
+                marker.position(latLng)
+                        .title(evento.getTituloEvento())
+                        .snippet(getdistancia(latLng))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+
+                InfoWindowAdapter infoWindowAdapter = new InfoWindowAdapter(getActivity());
+                googleMap.setInfoWindowAdapter(infoWindowAdapter);
+                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        Evento ev = (Evento) marker.getTag(); // recupera objeto quando for clicado na janela
+                        tinyDB.putObject("evento",ev);
+                        Intent intent = new Intent(getContext(), EventoActivity.class);
+                        getContext().startActivity(intent);
+                    }
+                });
+                Marker m = googleMap.addMarker(marker);
+                m.setTag(evento);
+                m.showInfoWindow();
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngRegiao,12));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(12),100,null);
+
+            }
+
+        });
+
 
     }
 
@@ -211,54 +292,13 @@ public class MapaFragment extends Fragment {
         }*/
     }
 
-
-    private void mostrarNoMapa(final Evento evento) {
-
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                //latitude e longitude dos eventos
-                LatLng latLng = new LatLng(evento.getEnderecolat(), evento.getEnderecolng());
-                // posicionando mapa na região do usuario
-                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                // marcando locais dos eventos
-
-                marker = new MarkerOptions();
-                marker.position(latLng)
-                        .title(evento.getTituloEvento())
-                        .snippet(getdistancia(latLng))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
-
-                InfoWindowAdapter infoWindowAdapter = new InfoWindowAdapter(getActivity());
-                googleMap.setInfoWindowAdapter(infoWindowAdapter);
-                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        Toast.makeText(getContext(),evento.getTituloEvento(),Toast.LENGTH_SHORT).show();
-                        tinyDB.putObject("evento",evento);
-                        Intent intent = new Intent(getContext(), EventoActivity.class);
-                        getContext().startActivity(intent);
-                    }
-                });
-
-                Marker m = googleMap.addMarker(marker);
-                m.setTag(evento);
-
-                m.showInfoWindow();
-
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngRegiao,12));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(12),100,null);
-
-            }
-
-        });
-
-
-    }
-
     private String getdistancia(LatLng latLng) {
-        // loc do usuario local
-        LatLng posicaoInicial = tinyDB.getObject("latlngAtual",LatLng.class);
+        LatLng posicaoInicial;
+        if(mLastLocation != null) {
+            posicaoInicial = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+        }else{
+            posicaoInicial =  tinyDB.getObject("latlngAtual", LatLng.class);
+        }
         // loc final
         LatLng posicaiFinal = latLng;
         // posição inicial

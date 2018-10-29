@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtSenha;
     private Button btnEntrar;
     private TextView txtCadastrar;
+    private TextView recuperarSenha;
     private FirebaseAuth autenticacao;
     private Usuario usuario;
     private ProgressDialog progressDialog;
@@ -89,6 +90,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(it);
             }
         });
+        recuperarSenha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(MainActivity.this, RecuperaSenha.class);
+                startActivity(it);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
     }
 
@@ -111,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private void alert(String txt) {
         Toast.makeText(MainActivity.this, txt, Toast.LENGTH_SHORT).show();
     }
@@ -129,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }else{
 
-                    alert("Usuário não encontrado");
+                    alert("Email ou senha incorretos");
                     progressDialog.dismiss();
                 }
             }
@@ -143,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void abrirTelaMenu() {
         if(progressDialog.isShowing()){
@@ -159,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         this.edtSenha = (EditText) findViewById(R.id.id_senha);
         this.btnEntrar = (Button) findViewById(R.id.id_entrar);
         this.txtCadastrar = (TextView) findViewById(R.id.id_cadastro);
+        this.recuperarSenha = (TextView) findViewById(R.id.id_recuperarSenha);
     }
 
     // Testa a conexão com a internet e retorna verdadeiro ou falso

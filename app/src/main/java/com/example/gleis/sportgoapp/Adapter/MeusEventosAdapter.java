@@ -176,7 +176,6 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             tvData = (TextView) itemView.findViewById(R.id.id_data);
             tvQtdParticpantes = (TextView) itemView.findViewById(R.id.id_qtd_participantes);
             tvMaxParticpantes = (TextView) itemView.findViewById(R.id.id_max_participantes);
-
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -186,7 +185,6 @@ public class MeusEventosAdapter extends RecyclerView.Adapter<MeusEventosAdapter.
             tinyDB.putObject("evento", listaEventos.get(getAdapterPosition()));
             Intent it = new Intent(mcontext, ChatActivity.class);
             mcontext.startActivity(it);
-            ((Activity) mcontext).finish();
         }
 
         @Override

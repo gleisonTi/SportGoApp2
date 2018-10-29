@@ -26,10 +26,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/imagem_evento"
+                android:src="@drawable/capa_android"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-
                 />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:id="@+id/id_subtitle"
+                android:textColor="@android:color/white"
+                app:layout_collapseMode="parallax"
+                android:layout_gravity="bottom"
+                android:text="subtitulo"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="32dp" />
+
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_evento"

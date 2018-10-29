@@ -13,11 +13,13 @@ public class ChatMessage {
     private String userName;
     private String message;
     private String hourMessage;
+    private String email;
 
-    public ChatMessage(String urlImageUser, String userName, String message) {
+    public ChatMessage(String urlImageUser, String userName,String email, String message) {
         this.urlImageUser = urlImageUser;
         this.userName = userName;
         this.message = message;
+        this.email = email;
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         Date hora = Calendar.getInstance().getTime();
@@ -25,6 +27,14 @@ public class ChatMessage {
     }
 
     public ChatMessage() {
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUrlImageUser() {

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.Activity.EventoActivity;
 import com.example.gleis.sportgoapp.Adapter.EventosAdapter;
@@ -41,7 +43,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnRefreshListener  {
+public class EventosFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerViewEventos;
     private LinearLayout lnSemEvento;
@@ -51,12 +53,11 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
     private List<Evento> listaEvento;
     private DatabaseReference referenceFirebase;
     private Evento todosEventos;
+    List<Evento> eventosAtalizados;
     private SwipeRefreshLayout swipRefresh;
 
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
-
-
 
     public EventosFragment() {
         // Required empty public constructor
@@ -67,9 +68,9 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sem_conexao, container, false);
-        if(isOnline()){
+        if (isOnline()) {
             // inflar o layout para este fragmento
-             view = inflater.inflate(R.layout.fragment_eventos, container, false);
+            view = inflater.inflate(R.layout.fragment_eventos, container, false);
             recyclerViewEventos = (RecyclerView) view.findViewById(R.id.id_recycler_view_eventos);
             swipRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
             swipRefresh.setColorSchemeResources(R.color.colorPrimary,
@@ -78,7 +79,6 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
                     android.R.color.holo_blue_dark);
 
             swipRefresh.setOnRefreshListener(this);
-
             swipRefresh.post(new Runnable() {
 
                 @Override
@@ -88,18 +88,6 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
 
                     // Fetching data from server
                     loadRecyclerViewData();
-                }
-            });
-            //metodo para carregar dados no final da lista !!! metodo antigo
-            recyclerViewEventos.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
                 }
             });
 
@@ -115,91 +103,87 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             llm.setReverseLayout(true);
-            llm.setStackFromEnd (true);
+            llm.setStackFromEnd(true);
             // setando layout no fragment
             recyclerViewEventos.setLayoutManager(llm);
 
-            listaEvento =  new ArrayList<>();
-
+            listaEvento = new ArrayList<>();
+            eventosAtalizados = new ArrayList<>();
             referenceFirebase = ConfiguraFirebase.getFirebase();
-
-            referenceFirebase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.hasChild("eventos")) {// primeiro testa se a eventos no banco
-                        lncarregando.setVisibility(View.GONE);
-                        lnSemEvento.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            referenceFirebase.child("eventos").orderByChild("idEvento").addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    if (dataSnapshot.exists()) {
-                        lncarregando.setVisibility(View.GONE);
-                        todosEventos = dataSnapshot.getValue(Evento.class);
-
-                        if (todosEventos.getStatusEvento().getTipo().equals("Ativo")) {
-                            listaEvento.add(todosEventos);
-                            lnSemEvento.setVisibility(View.GONE);
-                        }
-                        if (listaEvento.isEmpty()) {
-                            lnSemEvento.setVisibility(View.VISIBLE);
-                            lncarregando.setVisibility(View.GONE);
-                        }
-                    }else{
-                        lnSemEvento.setVisibility(View.VISIBLE);
-                        lncarregando.setVisibility(View.GONE);
-                    }
-
-                    adapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+            carregaDadosEvento();
 
 
-            adapter = new EventosAdapter(listaEvento,getActivity());
-            // adapter
-            recyclerViewEventos.setAdapter(adapter);
-            return  view;
+            return view;
         }
 
         return view;
 
     }
 
+    private void carregaDadosEvento() {
+        referenceFirebase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild("eventos")) {// primeiro testa se a eventos no banco
+                    lncarregando.setVisibility(View.GONE);
+                    lnSemEvento.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        atulizaDadosEvento();
+    }
+
+    private void atulizaDadosEvento() {
+        listaEvento.clear();
+        referenceFirebase.child("eventos").orderByChild("idEvento").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        if (dataSnapshot.exists()) {
+                            lncarregando.setVisibility(View.GONE);
+                            todosEventos = snapshot.getValue(Evento.class);
+                            if (todosEventos.getStatusEvento().getTipo().equals("Ativo")) {
+                                listaEvento.add(todosEventos);
+                                lnSemEvento.setVisibility(View.GONE);
+                            }
+                            if (listaEvento.isEmpty()) {
+                                lnSemEvento.setVisibility(View.VISIBLE);
+                                lncarregando.setVisibility(View.GONE);
+                            }
+                        } else {
+                            lnSemEvento.setVisibility(View.VISIBLE);
+                            lncarregando.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        adapter = new EventosAdapter(listaEvento, getActivity());
+        recyclerViewEventos.setAdapter(adapter);
+
+    }
+
     private void loadRecyclerViewData() {
         swipRefresh.setRefreshing(true);
-
+        atulizaDadosEvento();
         adapter.notifyDataSetChanged();
         swipRefresh.setRefreshing(false);
+    }
 
+    @Override
+    public void onRefresh() { // metodo de refresf da pagina
+        loadRecyclerViewData();
     }
 
     @Override
@@ -229,11 +213,11 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
                 public boolean onQueryTextChange(String newText) {
                     if (adapter != null) {
                         // ver o como melhorar a pesquisa
-                        System.out.println("size: "+adapter.getItemCount());
-                        if(adapter.getItemCount() == 0 ){
+                        System.out.println("size: " + adapter.getItemCount());
+                        if (adapter.getItemCount() == 0) {
                             lnSemEvento.setVisibility(View.VISIBLE);
                             recyclerViewEventos.setVisibility(View.GONE);
-                        }else{
+                        } else {
                             lnSemEvento.setVisibility(View.GONE);
                             recyclerViewEventos.setVisibility(View.VISIBLE);
                         }
@@ -241,6 +225,7 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
                     }
                     return true;
                 }
+
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     Log.i("onQueryTextSubmit", query);
@@ -263,7 +248,9 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        if (isOnline()) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -274,8 +261,4 @@ public class EventosFragment extends Fragment implements  SwipeRefreshLayout.OnR
                 manager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
-    @Override
-    public void onRefresh() { // metodo de refresf da pagina
-        loadRecyclerViewData();
-    }
 }

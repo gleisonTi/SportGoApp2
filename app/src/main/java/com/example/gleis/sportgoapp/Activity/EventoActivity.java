@@ -58,6 +58,7 @@ public class EventoActivity extends AppCompatActivity {
     private TextView local;
     private TextView data;
     private TextView hora;
+    private TextView subtitle;
     private TextView qtdparticipantes;
     private TextView descricao;
     private FloatingActionButton btnParticipar;
@@ -102,7 +103,7 @@ public class EventoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle(evento.getTituloEvento());
-        getSupportActionBar().setSubtitle(evento.getTipoEvento());
+        getSupportActionBar().setSubtitle("teste de per");
 
         Picasso.get().load(evento.getImagemEvento()).resize(width,height).centerCrop().into(imgEvento);
         Picasso.get().load(evento.getUsuarioCriador().getUrlImagem()).resize(width,height).centerCrop().into(imgCriador);
@@ -111,6 +112,7 @@ public class EventoActivity extends AppCompatActivity {
         local.setText(evento.getEndereco());
         data.setText(evento.getDataEvento());
         hora.setText(evento.getHoraEvento());
+        subtitle.setText(evento.getTipoEvento());
         // O 03 abaixo referencia a quanridade de participantes no evento !!! mudar depois
         qtdparticipantes.setText("03/"+evento.getQtdParticipante().toString());
         descricao.setText(evento.getDescricaoEvento());
@@ -284,6 +286,7 @@ public class EventoActivity extends AppCompatActivity {
         this.local = (TextView) findViewById(R.id.id_loc_evento);
         this.data = (TextView) findViewById(R.id.id_data);
         this.hora = (TextView) findViewById(R.id.id_hora);
+        this.subtitle = (TextView) findViewById(R.id.id_subtitle);
         this.qtdparticipantes = (TextView ) findViewById(R.id.id_qtd_participantes);
         this.descricao = (TextView) findViewById(R.id.id_descricao);
         this.btnParticipar = (FloatingActionButton) findViewById(R.id.fb_participar);

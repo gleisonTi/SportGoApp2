@@ -32,34 +32,37 @@
                 android:padding="3dp"
                 android:src="@null" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/id_nomeUsuario"
-                    android:layout_width="wrap_content"
+                    android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:paddingLeft="12dp"
                     android:paddingTop="20dp"
                     android:text="" />
 
                 <LinearLayout
+                    android:layout_width="87dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
                     android:layout_marginTop="18dp"
-                    android:gravity="end"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content">
+                    android:layout_alignParentRight="true">
+
                     <TextView
-                        android:layout_marginRight="16dp"
-                        android:layout_marginTop="2dp"
                         android:id="@+id/id_data"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""/>
+                        android:layout_marginTop="2dp"
+                        android:textStyle="bold"
+                        android:text="" />
                 </LinearLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </LinearLayout>
@@ -126,42 +129,46 @@
                     android:theme="@style/PrimaryFlatButton" />
 
                 <LinearLayout
-                    android:layout_marginTop="7dp"
-                    android:layout_marginLeft="22dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="22dp"
+                    android:layout_marginTop="7dp">
+
                     <ImageView
-                        android:layout_marginTop="4dp"
                         android:layout_width="30dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/ic_action_users"/>
+                        android:layout_marginTop="4dp"
+                        android:src="@drawable/ic_action_users" />
+
                     <TextView
-                        android:layout_marginTop="6dp"
                         android:id="@+id/id_qtd_participantes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="10sp"
-                        android:text=" "/>
-                    <TextView
                         android:layout_marginTop="6dp"
+                        android:text=" "
+                        android:textSize="10sp" />
+
+                    <TextView
                         android:id="@+id/id_max_participantes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:text=""/>
+                        android:layout_marginTop="6dp"
+                        android:text=""
+                        android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_marginTop="4dp"
-                        android:layout_marginLeft="8dp"
                         android:layout_width="25dp"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_location_on_24dp"/>
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="4dp"
+                        android:src="@drawable/ic_location_on_24dp" />
+
                     <TextView
-                        android:layout_marginTop="6dp"
                         android:id="@+id/id_distancia"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""/>
+                        android:layout_marginTop="6dp"
+                        android:text="" />
 
                 </LinearLayout>
 

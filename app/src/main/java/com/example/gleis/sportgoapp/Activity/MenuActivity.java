@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gleis.sportgoapp.Adapter.TabAdapter;
 import com.example.gleis.sportgoapp.Dao.ConfiguraFirebase;
@@ -162,7 +163,7 @@ public class MenuActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        final LatLng latLng = new LatLng(-20.557311, -47.413900);
+        LatLng latLng = new LatLng(-20.557311, -47.413900);
         tinyDB.putObject("latlngAtual",latLng);
     }
 
@@ -175,6 +176,7 @@ public class MenuActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
 
         }
+
     }
 
     @Override
@@ -286,6 +288,7 @@ public class MenuActivity extends AppCompatActivity
         if (id == R.id.id_conta) {
 
             Intent itconta = new Intent(MenuActivity.this, DadosUsuarios.class);
+            itconta.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(itconta);
 
         } else if (id == R.id.id_eventos) {
@@ -298,11 +301,19 @@ public class MenuActivity extends AppCompatActivity
 
         } else if (id == R.id.id_sair) {
 
-            FirebaseAuth auth = ConfiguraFirebase.getAutenticacao();
-            auth.signOut();
+            FirebaseAuth.getInstance().getCurrentUser().reload();
+            if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            }else{
+                FirebaseAuth.getInstance().signOut();
+                Intent it = new Intent(MenuActivity.this, MainActivity.class);
+                startActivity(it);
+                finish();
+            }
+           /* user.reload();
+            FirebaseAuth.getInstance().signOut();
             Intent it = new Intent(MenuActivity.this, MainActivity.class);
             startActivity(it);
-            finish();
+            finish();*/
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

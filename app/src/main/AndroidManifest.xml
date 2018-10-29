@@ -72,7 +72,8 @@
             android:name=".Activity.ChatActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".Activity.ParticipantesActivity" />
-        <activity android:name=".Activity.DadosUsuarioActivity"></activity>
+        <activity android:name=".Activity.DadosUsuarioActivity" />
+        <activity android:name=".Activity.RecuperaSenha"></activity>
     </application>
 
 </manifest>

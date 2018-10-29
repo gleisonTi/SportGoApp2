@@ -134,7 +134,19 @@
         </LinearLayout>
     </LinearLayout>
 
-
+            <TextView
+                android:id="@+id/conta_apagada"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                android:backgroundTint="@color/balonStatus"
+                android:padding="16dp"
+                android:background="@drawable/edittext_layout"
+                android:text="Usuário teve sua conta excluida"/>
 
     </LinearLayout>
 

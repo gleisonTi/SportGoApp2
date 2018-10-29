@@ -107,7 +107,7 @@ public class Evento implements Parcelable {
     public void cancelaFirebaseEvento(Map<String, Object> taskMap){
 
         DatabaseReference referenciaFirebase = ConfiguraFirebase.getFirebase();
-        referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).child("statusEvento").updateChildren(taskMap); // metodo que atualiza os dados
+        referenciaFirebase.child("eventos").child(String.valueOf(getIdEvento())).updateChildren(taskMap); // metodo que atualiza os dados
     }
 
     public String getIdEvento() {

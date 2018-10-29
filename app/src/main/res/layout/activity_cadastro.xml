@@ -4,197 +4,249 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context="com.example.gleis.sportgoapp.Activity.CadastroActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/id_cadastro"
+        android:layout_width="match_parent"
+        android:layout_height="565dp"
+        android:layout_marginTop="56dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="Escolha um foto para o perfil"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/id_cadastro_nome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:ems="10"
+            android:hint="Seu nome"
+            android:inputType="text"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.166"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/id_imagem_perfil"
+            android:layout_width="140dp"
+            android:layout_height="138dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/user"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
+        <EditText
+            android:id="@+id/id_cadastro_idade"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:ems="10"
+            android:hint="Idade"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_cadastro_nome" />
+
+        <EditText
+            android:id="@+id/id_cadastro_estado"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:ems="10"
+            android:hint="Estado"
+            android:inputType="text"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_cadastro_idade" />
+
+        <EditText
+            android:id="@+id/id_cadastro_cidade"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:ems="10"
+            android:hint="Cidade"
+            android:inputType="text"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.375"
+            app:layout_constraintStart_toEndOf="@+id/id_cadastro_estado"
+            app:layout_constraintTop_toBottomOf="@+id/id_cadastro_esporte" />
+
+        <Button
+            android:id="@+id/id_btn_cadastrar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/heihtButton"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Cadastrar"
+            android:textColor="@color/edit_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/id_cadastro_esporte"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/editTextPrimary"
+            android:ems="10"
+            android:hint="Esporte Favorito"
+            android:inputType="text"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/id_cadastro_idade"
+            app:layout_constraintTop_toBottomOf="@+id/id_cadastro_nome" />
+
+        <RadioGroup
+            android:id="@+id/id_sexo"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_cadastro_cidade"
+            tools:ignore="MissingConstraints">
+
+            <RadioButton
+                android:id="@+id/id_sexo_masculino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="masculino" />
+
+            <RadioButton
+                android:id="@+id/id_sexo_feminino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="Feminino" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="28dp"
+            android:text="Cadastre as informaçoes para seu perfil"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.51"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_imagem_perfil" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/id_validacao"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Escolha um foto para o perfil"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/id_cadastro_nome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/editTextPrimary"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:ems="10"
-        android:hint="Seu nome"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="16dp" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/id_imagem_perfil"
-        android:layout_width="140dp"
-        android:layout_height="138dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/user"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-
-    <EditText
-        android:id="@+id/id_cadastro_idade"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:maxLength="2"
-        android:hint="Idade"
-        android:inputType="number"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/editTextPrimary"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_cadastro_nome"
-        android:layout_marginLeft="16dp" />
-
-    <EditText
-        android:id="@+id/id_cadastro_estado"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:hint="Estado"
-        android:inputType="text"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/editTextPrimary"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_cadastro_idade"
-        android:layout_marginLeft="16dp" />
-
-    <EditText
-        android:id="@+id/id_cadastro_cidade"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/editTextPrimary"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:hint="Cidade"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.375"
-        app:layout_constraintStart_toEndOf="@+id/id_cadastro_estado"
-        app:layout_constraintTop_toBottomOf="@+id/id_cadastro_esporte" />
-
-    <Button
-        android:id="@+id/id_btn_cadastrar"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/heihtButton"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="Cadastrar"
-        android:textColor="@color/edit_text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/id_cadastro_esporte"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:background="@drawable/edittext_layout"
-        android:backgroundTint="@color/editTextPrimary"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:hint="Esporte Favorito"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/id_cadastro_idade"
-        app:layout_constraintTop_toBottomOf="@+id/id_cadastro_nome" />
-
-    <RadioGroup
-        android:id="@+id/id_sexo"
-        android:layout_width="0dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="212dp"
         android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_cadastro_cidade"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/id_cadastro"
+        tools:layout_editor_absoluteX="0dp"
         tools:ignore="MissingConstraints">
 
-        <RadioButton
-            android:id="@+id/id_sexo_masculino"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="masculino" />
+            android:text="Confirmação de Cadastro"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/id_sexo_feminino"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="Feminino" />
-    </RadioGroup>
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Um email de confirmação de cadadastro foi enviado para sua conta, para continuar faça a validação clicando no link recebido"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
-        android:text="Cadastre as informaçoes para seu perfil"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_imagem_perfil" />
-
+        <Button
+            android:id="@+id/id_btn_validar"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/heihtButton"
+            android:background="@drawable/edittext_layout"
+            android:backgroundTint="@color/colorPrimary"
+            android:paddingLeft="22dp"
+            android:layout_marginBottom="8dp"
+            android:paddingRight="22dp"
+            android:text="Verificar cadastro"
+            android:textColor="@color/edit_text_color" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

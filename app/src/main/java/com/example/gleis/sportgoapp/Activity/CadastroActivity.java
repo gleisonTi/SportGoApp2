@@ -11,12 +11,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -34,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +48,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CadastroActivity extends AppCompatActivity {
 
+    public LinearLayout boxValidacao;
+    public ConstraintLayout boxCadastro;
     public CircleImageView imgPerfil;
 
     public EditText edtNome;
@@ -56,6 +62,7 @@ public class CadastroActivity extends AppCompatActivity {
     public RadioButton rbFeminino;
 
     public Button btnCadastrar;
+    public Button btnValidar;
 
     private Usuario usuario = new Usuario();
 
@@ -166,7 +173,43 @@ public class CadastroActivity extends AppCompatActivity {
             }
         });
 
+        btnValidar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prdUpload.setMessage("Verificando conta");
+                prdUpload.setCancelable(false);
+                prdUpload.show();
+                verificaEmail();
+            }
+        });
+    }
+    private void verificaEmail() {
 
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                user.reload();
+                if (user != null) {
+                    //---- HERE YOU CHECK IF EMAIL IS VERIFIED
+                    if (user.isEmailVerified()) {
+                        Toast.makeText(CadastroActivity.this,"Usuário validado com sucesso",Toast.LENGTH_LONG).show();
+                        Intent it = new Intent(CadastroActivity.this, MenuActivity.class);
+                        startActivity(it);
+                        prdUpload.dismiss();
+                        finish();
+                    }
+                    else {
+                        prdUpload.dismiss();
+                        Toast.makeText(CadastroActivity.this,"Usuário não validado. Tente novamente",Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    // User is signed out
+                    prdUpload.dismiss();
+                    Toast.makeText(CadastroActivity.this,"Erro de Conexão",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -266,25 +309,23 @@ public class CadastroActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
 
+
                     String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
                     //FirebaseUser usuarioFirebase = task.getResult().getUser();
-
                     usuario.setId(identificadorUsuario);
-
                     System.out.println("Mostrar Usuario: " + usuario);
                     usuario.salvarFirebase();
-
-
                     Preferencias preferenciasAndroid = new Preferencias(CadastroActivity.this);
-
                     preferenciasAndroid.salvarUsuarioPreferencias(identificadorUsuario, usuario.getNome());
-
-                    alert("Usuario Cadastrado com sucesso");
                     prdUpload.dismiss();
-                    Intent it = new Intent(CadastroActivity.this, MenuActivity.class);
+
+                    boxCadastro.setVisibility(View.GONE);
+                    boxValidacao.setVisibility(View.VISIBLE);
+                    task.getResult().getUser().sendEmailVerification(); // envia email de confirmação para email do usuario
+               /*   Intent it = new Intent(CadastroActivity.this, MenuActivity.class);
                     startActivity(it);
                     finish();
-
+*/
                 } else {
                     String erroExcecao = "";
                     try {
@@ -310,25 +351,27 @@ public class CadastroActivity extends AppCompatActivity {
     }
 
 
+
+
     private void alert(String txt) {
         Toast.makeText(CadastroActivity.this, txt, Toast.LENGTH_SHORT).show();
     }
 
 
     private void associacaoCadastro() {
-        this.imgPerfil = (CircleImageView) findViewById(R.id.id_imagem_perfil);
+        this.boxCadastro = (ConstraintLayout) findViewById(R.id.id_cadastro);
+        this.boxValidacao = (LinearLayout) findViewById(R.id.id_validacao);
 
+        this.imgPerfil = (CircleImageView) findViewById(R.id.id_imagem_perfil);
         this.edtNome = (EditText) findViewById(R.id.id_cadastro_nome);
         this.edtIdade = (EditText) findViewById(R.id.id_cadastro_idade);
         this.edtEsporte = (EditText) findViewById(R.id.id_cadastro_esporte);
         this.edtEstado = (EditText) findViewById(R.id.id_cadastro_estado);
         this.edtCidade = (EditText) findViewById(R.id.id_cadastro_cidade);
-
         this.rbFeminino = (RadioButton) findViewById(R.id.id_sexo_feminino);
         this.rbMasculino = (RadioButton) findViewById(R.id.id_sexo_masculino);
-
         this.btnCadastrar = (Button) findViewById(R.id.id_btn_cadastrar);
-
+        this.btnValidar = (Button) findViewById(R.id.id_btn_validar);
         this.prdUpload = new ProgressDialog(this);
 
     }
