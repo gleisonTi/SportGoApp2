@@ -288,7 +288,6 @@ public class MenuActivity extends AppCompatActivity
         if (id == R.id.id_conta) {
 
             Intent itconta = new Intent(MenuActivity.this, DadosUsuarios.class);
-            itconta.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(itconta);
 
         } else if (id == R.id.id_eventos) {
